@@ -180,7 +180,9 @@ export default function DashboardScreen({ user }) {
 
   /* For guests, combine their local trips with seed data; for real users, use Firestore */
   const { trips: loadedTrips, tripsLoading } = useTrips(user?.uid);
-  const trips = isGuest ? [...loadedTrips, ...SEED_TRIPS] : loadedTrips;
+  const trips = isGuest
+    ? [...(Array.isArray(loadedTrips) ? loadedTrips : []), ...SEED_TRIPS]
+    : (Array.isArray(loadedTrips) ? loadedTrips : []);
   const loading = tripsLoading;
 
   const [insight, setInsight]         = useState(null);

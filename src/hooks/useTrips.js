@@ -22,7 +22,8 @@ export function useTrips(uid) {
         const stored = localStorage.getItem('carboncoach_guest_trips');
         if (stored) {
           try {
-            setTrips(JSON.parse(stored));
+            const parsed = JSON.parse(stored);
+            setTrips(Array.isArray(parsed) ? parsed : []);
           } catch (e) {
             console.error('Error parsing guest trips', e);
             setTrips([]);
