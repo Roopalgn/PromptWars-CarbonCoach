@@ -389,6 +389,16 @@ export default function LogTripScreen({ user }) {
   const [originPlaceId,  setOriginPlaceId]  = useState('');
   const [destAddress,    setDestAddress]    = useState('');
   const [destPlaceId,    setDestPlaceId]    = useState('');
+  const [coords,         setCoords]         = useState(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => {}
+      );
+    }
+  }, []);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
