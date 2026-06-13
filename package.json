@@ -1,0 +1,28 @@
+{
+  "name": "carboncoach",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@googlemaps/js-api-loader": "^1.16.6",
+    "chart.js": "^4.4.3",
+    "firebase": "^12.14.0",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "jsdom": "^24.1.0",
+    "vite": "^5.3.1",
+    "vitest": "^1.6.0"
+  }
+}
