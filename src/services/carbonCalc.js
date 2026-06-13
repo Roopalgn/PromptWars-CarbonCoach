@@ -47,6 +47,9 @@ export function getKgSaved(actualKg, alternativeKg) {
 export function getAllAlternatives(chosenMode, distanceKm) {
   return COMPARISON_MODES
     .filter((m) => m !== chosenMode)
-    .map((m) => ({ mode: m, kg: calculateCO2(m, distanceKm) }))
-    .sort((a, b) => a.kg - b.kg);
+    .map((m) => {
+      const val = calculateCO2(m, distanceKm);
+      return { mode: m, kg: val, kg_co2: val };
+    })
+    .sort((a, b) => a.kg_co2 - b.kg_co2);
 }
