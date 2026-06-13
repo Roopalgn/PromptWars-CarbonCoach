@@ -297,37 +297,81 @@ function TripResultCard({ result, onLog, onReset, saving, isGuest }) {
 }
 
 /* ── Helper to resolve place ID from typed text if dropdown skipped ── */
-function resolvePlaceFromText(text) {
+function resolvePlaceFromText(text, coords) {
   return new Promise((resolve) => {
     if (!text || !window.google) {
       resolve(null);
       return;
     }
-    // Try Geocoding first
-    const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ address: text, componentRestrictions: { country: 'in' } }, (results, status) => {
-      if (status === 'OK' && results && results[0]) {
-        resolve({
-          place_id: results[0].place_id,
-          formatted_address: results[0].formatted_address
-        });
-      } else {
-        // Fallback to Places Autocomplete Service
-        try {
-          const service = new window.google.maps.places.AutocompleteService();
-          service.getPlacePredictions({ input: text, componentRestrictions: { country: 'in' } }, (predictions, status) => {
-            if (status === 'OK' && predictions && predictions[0]) {
-              resolve({
-                place_id: predictions[0].place_id,
-                formatted_address: predictions[0].description
-              });
-            } else {
-              resolve(null);
-            }
-          });
-        } catch (err) {
-          resolve(null);
+    
+    const getPlaceId = () => {
+      return new Promise((res) => {
+        const geocoder = new window.google.maps.Geocoder();
+        const geocodeOpts = {
+          address: text,
+          componentRestrictions: { country: 'in' },
+        };
+        if (coords) {
+          geocodeOpts.location = new window.google.maps.LatLng(coords.lat, coords.lng);
         }
+        geocoder.geocode(geocodeOpts, (results, status) => {
+          if (status === 'OK' && results && results[0]) {
+            res(results[0].place_id);
+          } else {
+            try {
+              const service = new window.google.maps.places.AutocompleteService();
+              const autoOpts = {
+                input: text,
+                componentRestrictions: { country: 'in' },
+              };
+              if (coords) {
+                autoOpts.locationBias = new window.google.maps.LatLng(coords.lat, coords.lng);
+              }
+              service.getPlacePredictions(autoOpts, (predictions, status) => {
+                if (status === 'OK' && predictions && predictions[0]) {
+                  res(predictions[0].place_id);
+                } else {
+                  res(null);
+                }
+              });
+            } catch (err) {
+              res(null);
+            }
+          }
+        });
+      });
+    };
+
+    getPlaceId().then((placeId) => {
+      if (!placeId) {
+        resolve(null);
+        return;
+      }
+      
+      try {
+        const dummy = document.createElement('div');
+        const service = new window.google.maps.places.PlacesService(dummy);
+        service.getDetails({ placeId, fields: ['name', 'formatted_address', 'place_id'] }, (place, status) => {
+          if (status === 'OK' && place) {
+            const name = place.name;
+            const address = place.formatted_address || '';
+            const fullAddress = (name && !address.startsWith(name)) ? `${name}, ${address}` : address;
+            resolve({
+              place_id: place.place_id,
+              formatted_address: fullAddress
+            });
+          } else {
+            resolve({
+              place_id: placeId,
+              formatted_address: text
+            });
+          }
+        });
+      } catch (err) {
+        resolve({
+          place_id: placeId,
+          formatted_address: text
+        });
       }
     });
   });
@@ -373,14 +417,22 @@ export default function LogTripScreen({ user }) {
   // Attach Places Autocomplete
   useEffect(() => {
     if (!mapsReady || !originInputRef.current || !destinationInputRef.current) return;
+    
     const opts = { componentRestrictions: { country: 'in' } };
+    if (coords && window.google) {
+      opts.locationBias = new window.google.maps.LatLng(coords.lat, coords.lng);
+    }
 
     originACRef.current = new window.google.maps.places.Autocomplete(originInputRef.current, opts);
     originACRef.current.addListener('place_changed', () => {
       const place = originACRef.current.getPlace();
       if (place?.place_id) {
         setOriginPlaceId(place.place_id);
-        setOriginAddress(place.formatted_address ?? originInputRef.current.value);
+        const name = place.name;
+        const address = place.formatted_address || '';
+        const fullAddress = (name && !address.startsWith(name)) ? `${name}, ${address}` : address;
+        setOriginAddress(fullAddress);
+        if (originInputRef.current) originInputRef.current.value = fullAddress;
       }
     });
 
@@ -389,10 +441,14 @@ export default function LogTripScreen({ user }) {
       const place = destinationACRef.current.getPlace();
       if (place?.place_id) {
         setDestPlaceId(place.place_id);
-        setDestAddress(place.formatted_address ?? destinationInputRef.current.value);
+        const name = place.name;
+        const address = place.formatted_address || '';
+        const fullAddress = (name && !address.startsWith(name)) ? `${name}, ${address}` : address;
+        setDestAddress(fullAddress);
+        if (destinationInputRef.current) destinationInputRef.current.value = fullAddress;
       }
     });
-  }, [mapsReady]);
+  }, [mapsReady, coords]);
 
   function resetForm() {
     setOriginAddress(''); setOriginPlaceId('');
@@ -418,7 +474,7 @@ export default function LogTripScreen({ user }) {
       if (!currentOriginId) {
         const text = originInputRef.current?.value || '';
         if (text.trim()) {
-          const resolved = await resolvePlaceFromText(text);
+          const resolved = await resolvePlaceFromText(text, coords);
           if (resolved) {
             currentOriginId = resolved.place_id;
             currentOriginAddr = resolved.formatted_address;
@@ -440,7 +496,7 @@ export default function LogTripScreen({ user }) {
       if (!currentDestId) {
         const text = destinationInputRef.current?.value || '';
         if (text.trim()) {
-          const resolved = await resolvePlaceFromText(text);
+          const resolved = await resolvePlaceFromText(text, coords);
           if (resolved) {
             currentDestId = resolved.place_id;
             currentDestAddr = resolved.formatted_address;
