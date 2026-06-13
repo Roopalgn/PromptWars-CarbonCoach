@@ -7,8 +7,8 @@
 ---
 
 **Project:** CarbonCoach
-**Generated:** 2026-06-13 13:51:35
-**Category:** Link-in-Bio Page Builder
+**Generated:** 2026-06-13 19:30:52
+**Category:** Sustainable Energy / Climate Tech
 
 ---
 
@@ -18,29 +18,29 @@
 
 | Role | Hex | CSS Variable |
 |------|-----|--------------|
-| Primary | `#78716C` | `--color-primary` |
+| Primary | `#0891B2` | `--color-primary` |
 | On Primary | `#FFFFFF` | `--color-on-primary` |
-| Secondary | `#92400E` | `--color-secondary` |
-| Accent/CTA | `#D97706` | `--color-accent` |
-| Background | `#FFFBEB` | `--color-background` |
-| Foreground | `#0F172A` | `--color-foreground` |
-| Muted | `#F6F6F6` | `--color-muted` |
-| Border | `#EEEDED` | `--color-border` |
+| Secondary | `#22D3EE` | `--color-secondary` |
+| Accent/CTA | `#16A34A` | `--color-accent` |
+| Background | `#ECFEFF` | `--color-background` |
+| Foreground | `#164E63` | `--color-foreground` |
+| Muted | `#E8F1F6` | `--color-muted` |
+| Border | `#A5F3FC` | `--color-border` |
 | Destructive | `#DC2626` | `--color-destructive` |
-| Ring | `#78716C` | `--color-ring` |
+| Ring | `#0891B2` | `--color-ring` |
 
-**Color Notes:** Book brown + page amber
+**Color Notes:** Electric cyan + eco green [Accent adjusted from #22C55E for WCAG 3:1]
 
 ### Typography
 
-- **Heading Font:** Inter
-- **Body Font:** Playfair Display
-- **Mood:** bold typography, editorial, poster, near-black, vermillion, luxury, type-as-hero, manifesto, high-contrast
-- **Google Fonts:** [Inter + Playfair Display](https://fonts.google.com/share?selection.family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400|JetBrains+Mono:wght@400|Playfair+Display:ital@1)
+- **Heading Font:** Lora
+- **Body Font:** Raleway
+- **Mood:** calm, wellness, health, relaxing, natural, organic
+- **Google Fonts:** [Lora + Raleway](https://fonts.google.com/share?selection.family=Lora:wght@400;500;600;700|Raleway:wght@300;400;500;600;700)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400&family=Playfair+Display:ital@1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');
 ```
 
 ### Spacing Variables
@@ -73,7 +73,7 @@
 ```css
 /* Primary Button */
 .btn-primary {
-  background: #D97706;
+  background: #16A34A;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -90,8 +90,8 @@
 /* Secondary Button */
 .btn-secondary {
   background: transparent;
-  color: #78716C;
-  border: 2px solid #78716C;
+  color: #0891B2;
+  border: 2px solid #0891B2;
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -104,7 +104,7 @@
 
 ```css
 .card {
-  background: #FFFBEB;
+  background: #ECFEFF;
   border-radius: 12px;
   padding: 24px;
   box-shadow: var(--shadow-md);
@@ -130,9 +130,9 @@
 }
 
 .input:focus {
-  border-color: #78716C;
+  border-color: #0891B2;
   outline: none;
-  box-shadow: 0 0 0 3px #78716C20;
+  box-shadow: 0 0 0 3px #0891B220;
 }
 ```
 
@@ -158,28 +158,27 @@
 
 ## Style Guidelines
 
-**Style:** Vibrant & Block-based
+**Style:** Organic Biophilic
 
-**Keywords:** Bold, energetic, playful, block layout, geometric shapes, high color contrast, duotone, modern, energetic
+**Keywords:** Nature, organic shapes, green, sustainable, rounded, flowing, wellness, earthy, natural textures
 
-**Best For:** Startups, creative agencies, gaming, social media, youth-focused, entertainment, consumer
+**Best For:** Wellness apps, sustainability brands, eco products, health apps, meditation, organic food brands
 
-**Key Effects:** Large sections (48px+ gaps), animated patterns, bold hover (color shift), scroll-snap, large type (32px+), 200-300ms
+**Key Effects:** Rounded corners (16-24px), organic curves (border-radius variations), natural shadows, flowing SVG shapes
 
 ### Page Pattern
 
-**Pattern Name:** App Store Style Landing
+**Pattern Name:** Data + Trust
 
-- **Conversion Strategy:** Show real screenshots. Include ratings (4.5+ stars). QR code for mobile. Platform-specific CTAs.
-- **CTA Placement:** Download buttons prominent (App Store + Play Store) throughout
-- **Section Order:** 1. Hero with device mockup, 2. Screenshots carousel, 3. Features with icons, 4. Reviews/ratings, 5. Download CTAs
+- **CTA Placement:** Above fold
+- **Section Order:** Hero > Features > CTA
 
 ---
 
 ## Anti-Patterns (Do NOT Use)
 
-- ❌ Muted colors
-- ❌ Low energy
+- ❌ Greenwashing
+- ❌ No real data
 
 ### Additional Forbidden Patterns
 

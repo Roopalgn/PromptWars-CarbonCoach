@@ -44,7 +44,7 @@ export default function ModeSelector({ selected, onChange }) {
             aria-checked={isSelected}
             aria-label={MODE_LABELS[mode]}
             tabIndex={isSelected ? 0 : -1}
-            className={`mode-btn${isSelected ? ' mode-btn--selected' : ''}`}
+            className={`mode-btn${isSelected ? ' selected' : ''}`}
             onClick={() => onChange(mode)}
             onKeyDown={(e) => handleKeyDown(e, mode)}
           >

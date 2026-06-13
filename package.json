@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@firebase/ai": "^2.13.0",
     "@google/generative-ai": "^0.24.1",
     "@googlemaps/js-api-loader": "^1.16.6",
     "chart.js": "^4.4.3",

@@ -31,10 +31,10 @@ ChartJS.register(
 );
 
 const MODE_COLORS = {
-  ola_uber: '#D97706',
-  auto:     '#F59E0B',
-  bus:      '#10B981',
-  metro:    '#059669',
+  ola_uber: '#0891B2',
+  auto:     '#22D3EE',
+  bus:      '#16A34A',
+  metro:    '#0E7490',
   carpool:  '#6366F1',
   cycle:    '#84CC16',
   walk:     '#14B8A6',
@@ -116,11 +116,11 @@ export default function DashboardScreen({ user }) {
         label: 'kg CO₂',
         data: dailyData,
         backgroundColor: dailyData.map((v) =>
-          v > 3 ? 'rgba(220, 38, 38, 0.7)'
-          : v > 1 ? 'rgba(217, 119, 6, 0.7)'
-          : 'rgba(5, 150, 105, 0.7)'
+          v > 3 ? 'rgba(220, 38, 38, 0.75)'
+          : v > 1 ? 'rgba(217, 119, 6, 0.75)'
+          : 'rgba(22, 163, 74, 0.75)'
         ),
-        borderRadius: 8,
+        borderRadius: 10,
         borderSkipped: false,
       },
     ],
@@ -140,18 +140,18 @@ export default function DashboardScreen({ user }) {
     scales: {
       y: {
         beginAtZero: true,
-        grid: { color: 'rgba(0,0,0,0.05)' },
+        grid: { color: 'rgba(8,145,178,0.08)' },
         ticks: {
           font: { family: "'JetBrains Mono', monospace", size: 11 },
-          color: '#78716C',
+          color: '#4B7A8A',
           callback: (v) => `${v} kg`,
         },
       },
       x: {
         grid: { display: false },
         ticks: {
-          font: { family: "'Inter', sans-serif", size: 12 },
-          color: '#78716C',
+          font: { family: "'Raleway', sans-serif", size: 12 },
+          color: '#4B7A8A',
         },
       },
     },
@@ -170,7 +170,7 @@ export default function DashboardScreen({ user }) {
         data: donutLabels.map((m) => modeCounts[m]),
         backgroundColor: donutLabels.map((m) => MODE_COLORS[m] ?? '#A8A29E'),
         borderWidth: 2,
-        borderColor: '#FFFBEB',
+        borderColor: '#F0FDFF',
       },
     ],
   };
@@ -182,8 +182,8 @@ export default function DashboardScreen({ user }) {
       legend: {
         position: 'bottom',
         labels: {
-          font: { family: "'Inter', sans-serif", size: 11 },
-          color: '#78716C',
+          font: { family: "'Raleway', sans-serif", size: 11 },
+          color: '#4B7A8A',
           padding: 8,
           boxWidth: 12,
         },

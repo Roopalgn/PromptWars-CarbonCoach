@@ -3,8 +3,8 @@ import { IconLeaf } from '../components/Icons';
 
 /**
  * Unauthenticated landing page.
- * Single headline + subheadline + Google Sign-In CTA.
- * Style: Organic Biophilic — warm gradients, organic shapes, nature forward.
+ * Pattern: Data + Trust — Hero > Features > CTA (UI/UX Pro Max v2.5.0)
+ * Style: Organic Biophilic — cyan gradient hero, organic shapes, premium glassmorphism.
  */
 export default function LandingScreen({ onSignIn, authError, signingIn }) {
   return (
@@ -15,50 +15,99 @@ export default function LandingScreen({ onSignIn, authError, signingIn }) {
         className="landing"
         aria-label="CarbonCoach welcome page"
       >
-        <div className="landing-content">
-          {/* Brand */}
-          <div className="landing-brand">
+        {/* ── Hero Section ──────────────────────────────────────── */}
+        <div className="landing-hero" role="banner">
+          {/* Brand badge */}
+          <div className="landing-logo-wrap">
             <div className="landing-logo-icon" aria-hidden="true">
-              <IconLeaf size={26} style={{ color: '#D1FAE5' }} />
+              <IconLeaf size={34} style={{ color: '#FFFFFF' }} />
             </div>
-            <span className="landing-name">CarbonCoach</span>
           </div>
 
-          {/* Headline */}
+          <div className="landing-name-badge" aria-label="CarbonCoach app">
+            <IconLeaf size={14} style={{ color: '#A5F3FC' }} aria-hidden="true" />
+            CarbonCoach
+          </div>
+
           <h1 className="landing-headline">
-            Every trip has a<br />carbon cost.<br />
-            <span style={{ color: 'var(--color-accent)' }}>Know yours.</span>
+            Every trip has a<br />
+            carbon cost.<br />
+            <em>Know yours.</em>
           </h1>
 
           <p className="landing-sub">
-            CarbonCoach shows your real transport footprint and your best
-            alternative — instantly, using live route data.
+            Real transport footprint · live route data · AI-powered insights
           </p>
+        </div>
 
-          {/* Stats pills */}
+        {/* ── Content Section ───────────────────────────────────── */}
+        <div className="landing-content">
+          {/* Quick stats */}
           <div className="landing-stats" aria-label="App highlights">
             <div className="stat-pill">
               <span className="stat-num">7</span>
-              <span className="stat-label">modes tracked</span>
+              <span className="stat-label">modes<br />tracked</span>
             </div>
             <div className="stat-pill">
-              <span className="stat-num">India</span>
-              <span className="stat-label">specific data</span>
+              <span className="stat-num">🇮🇳</span>
+              <span className="stat-label">India<br />data</span>
             </div>
             <div className="stat-pill">
               <span className="stat-num">30s</span>
-              <span className="stat-label">per trip</span>
+              <span className="stat-label">per<br />trip</span>
+            </div>
+          </div>
+
+          {/* Feature highlights */}
+          <div className="feature-list" aria-label="Key features">
+            <div className="feature-item">
+              <div className="feature-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+                </svg>
+              </div>
+              <div className="feature-text">
+                <p className="feature-title">Real-time calculation</p>
+                <p className="feature-desc">Live Google Maps distances, India-specific emission factors</p>
+              </div>
+            </div>
+
+            <div className="feature-item">
+              <div className="feature-icon" aria-hidden="true" style={{ background: 'linear-gradient(135deg, rgba(22,163,74,0.15), rgba(22,163,74,0.05))', color: 'var(--color-accent)' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 12h4l3-9 4 18 3-9h4"/>
+                </svg>
+              </div>
+              <div className="feature-text">
+                <p className="feature-title">Compare alternatives</p>
+                <p className="feature-desc">See how much CO₂ you'd save by switching modes</p>
+              </div>
+            </div>
+
+            <div className="feature-item">
+              <div className="feature-icon" aria-hidden="true" style={{ background: 'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(34,211,238,0.05))', color: 'var(--color-secondary-dark)' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 22a10 10 0 0 1-10-10"/><path d="M12 8v4l2 2"/>
+                </svg>
+              </div>
+              <div className="feature-text">
+                <p className="feature-title">Gemini AI insights</p>
+                <p className="feature-desc">Personalised weekly summaries powered by Google AI</p>
+              </div>
             </div>
           </div>
 
           {/* Error message */}
           {authError && (
             <p className="error-msg" role="alert" aria-live="assertive">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
               {authError}
             </p>
           )}
 
-          {/* Sign In */}
+          {/* Sign In CTA */}
           <button
             id="sign-in-btn"
             type="button"
@@ -78,7 +127,7 @@ export default function LandingScreen({ onSignIn, authError, signingIn }) {
           </button>
 
           <p className="landing-note">
-            Your trip data is private and only visible to you.
+            🔒 Your trip data is private and only visible to you.
           </p>
         </div>
       </main>
@@ -91,8 +140,8 @@ function GoogleColorIcon() {
   return (
     <svg
       aria-hidden="true"
-      width="20"
-      height="20"
+      width="22"
+      height="22"
       viewBox="0 0 24 24"
       style={{ flexShrink: 0 }}
     >

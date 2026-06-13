@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 
-// SVG icon components (Phosphor-style, stroke 1.5px)
+/* ── Inline SVG icons (stroke 2px, consistent style) ── */
 function IconPlus({ size = 22 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -45,15 +45,12 @@ export default function BottomNav() {
           to={to}
           id={id}
           end={to === '/'}
-          className={({ isActive }) =>
-            `bottom-nav-item${isActive ? ' bottom-nav-item--active' : ''}`
-          }
+          className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           aria-label={label}
+          aria-current={undefined}
         >
-          <span className="bottom-nav-icon">
-            <Icon size={22} />
-          </span>
-          <span className="bottom-nav-label">{label}</span>
+          <Icon size={22} />
+          <span>{label}</span>
         </NavLink>
       ))}
     </nav>

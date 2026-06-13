@@ -25,10 +25,11 @@ export default function App() {
       <div className="loading-shell" aria-label="Loading CarbonCoach" role="status">
         <div className="loading-shell-brand" aria-hidden="true">
           <div style={{
-            width: 36, height: 36,
-            background: 'var(--color-forest)',
+            width: 40, height: 40,
+            background: 'var(--gradient-hero)',
             borderRadius: 'var(--radius-md)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(8,145,178,0.35)',
           }}>
             <IconLeaf size={22} style={{ color: '#D1FAE5' }} />
           </div>
