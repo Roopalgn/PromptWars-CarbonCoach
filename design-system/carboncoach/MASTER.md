@@ -7,7 +7,7 @@
 ---
 
 **Project:** CarbonCoach
-**Generated:** 2026-06-13 19:30:52
+**Generated:** 2026-06-13 19:53:14
 **Category:** Sustainable Energy / Climate Tech
 
 ---
@@ -18,29 +18,29 @@
 
 | Role | Hex | CSS Variable |
 |------|-----|--------------|
-| Primary | `#0891B2` | `--color-primary` |
+| Primary | `#1E40AF` | `--color-primary` |
 | On Primary | `#FFFFFF` | `--color-on-primary` |
-| Secondary | `#22D3EE` | `--color-secondary` |
-| Accent/CTA | `#16A34A` | `--color-accent` |
-| Background | `#ECFEFF` | `--color-background` |
-| Foreground | `#164E63` | `--color-foreground` |
-| Muted | `#E8F1F6` | `--color-muted` |
-| Border | `#A5F3FC` | `--color-border` |
+| Secondary | `#3B82F6` | `--color-secondary` |
+| Accent/CTA | `#D97706` | `--color-accent` |
+| Background | `#F8FAFC` | `--color-background` |
+| Foreground | `#1E3A8A` | `--color-foreground` |
+| Muted | `#E9EEF6` | `--color-muted` |
+| Border | `#DBEAFE` | `--color-border` |
 | Destructive | `#DC2626` | `--color-destructive` |
-| Ring | `#0891B2` | `--color-ring` |
+| Ring | `#1E40AF` | `--color-ring` |
 
-**Color Notes:** Electric cyan + eco green [Accent adjusted from #22C55E for WCAG 3:1]
+**Color Notes:** Blue data + amber highlights [Accent adjusted from #F59E0B for WCAG 3:1]
 
 ### Typography
 
-- **Heading Font:** Lora
-- **Body Font:** Raleway
-- **Mood:** calm, wellness, health, relaxing, natural, organic
-- **Google Fonts:** [Lora + Raleway](https://fonts.google.com/share?selection.family=Lora:wght@400;500;600;700|Raleway:wght@300;400;500;600;700)
+- **Heading Font:** Fira Code
+- **Body Font:** Fira Sans
+- **Mood:** dashboard, data, analytics, code, technical, precise
+- **Google Fonts:** [Fira Code + Fira Sans](https://fonts.google.com/share?selection.family=Fira+Code:wght@400;500;600;700|Fira+Sans:wght@300;400;500;600;700)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
 ```
 
 ### Spacing Variables
@@ -73,7 +73,7 @@
 ```css
 /* Primary Button */
 .btn-primary {
-  background: #16A34A;
+  background: #D97706;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -90,8 +90,8 @@
 /* Secondary Button */
 .btn-secondary {
   background: transparent;
-  color: #0891B2;
-  border: 2px solid #0891B2;
+  color: #1E40AF;
+  border: 2px solid #1E40AF;
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -104,7 +104,7 @@
 
 ```css
 .card {
-  background: #ECFEFF;
+  background: #F8FAFC;
   border-radius: 12px;
   padding: 24px;
   box-shadow: var(--shadow-md);
@@ -130,9 +130,9 @@
 }
 
 .input:focus {
-  border-color: #0891B2;
+  border-color: #1E40AF;
   outline: none;
-  box-shadow: 0 0 0 3px #0891B220;
+  box-shadow: 0 0 0 3px #1E40AF20;
 }
 ```
 
@@ -168,10 +168,11 @@
 
 ### Page Pattern
 
-**Pattern Name:** Data + Trust
+**Pattern Name:** Real-Time / Operations Landing
 
-- **CTA Placement:** Above fold
-- **Section Order:** Hero > Features > CTA
+- **Conversion Strategy:** For ops/security/iot products. Demo or sandbox link. Trust signals.
+- **CTA Placement:** Primary CTA in nav + After metrics
+- **Section Order:** 1. Hero (product + live preview or status), 2. Key metrics/indicators, 3. How it works, 4. CTA (Start trial / Contact)
 
 ---
 
