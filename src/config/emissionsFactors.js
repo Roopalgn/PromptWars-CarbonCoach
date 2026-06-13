@@ -15,7 +15,7 @@ export const EMISSIONS_FACTORS = {
 };
 
 // Modes shown in the comparison panel (exclude user's chosen mode at runtime)
-export const COMPARISON_MODES = ['metro', 'bus', 'auto', 'carpool', 'cycle', 'walk'];
+export const COMPARISON_MODES = ['ola_uber', 'metro', 'bus', 'auto', 'carpool', 'cycle', 'walk'];
 
 export const MODE_LABELS = {
   ola_uber: 'Ola / Uber',
