@@ -61,3 +61,24 @@ export function isThisWeek(timestamp) {
   weekStart.setHours(0, 0, 0, 0);
   return date >= weekStart;
 }
+
+/**
+ * Format a long address into a cleaner short version.
+ * Takes the first part, or first two parts if the first part is a short prefix.
+ * @param {string} address
+ * @returns {string}
+ */
+export function formatShortAddress(address) {
+  if (!address) return '';
+  const parts = address.split(',');
+  if (parts.length <= 1) return address;
+
+  const first = parts[0].trim();
+  const second = parts[1].trim();
+
+  // If first part is a number or floor/room prefix, combine first two parts
+  if (first.length <= 12 && /^\d|floor|room|flat|shop|no\./i.test(first)) {
+    return `${first}, ${second}`;
+  }
+  return first;
+}

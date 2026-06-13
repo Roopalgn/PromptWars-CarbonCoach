@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTrips } from '../hooks/useTrips';
 import { getLatestInsight, saveInsight } from '../services/firestore';
 import { generateInsight } from '../services/gemini';
-import { roundCO2, formatDate, formatDayLabel, getLast7Days, isThisWeek } from '../utils/formatters';
+import { roundCO2, formatDate, formatDayLabel, getLast7Days, isThisWeek, formatShortAddress } from '../utils/formatters';
 import { MODE_LABELS } from '../config/emissionsFactors';
 import {
   Chart as ChartJS,
@@ -577,7 +577,7 @@ export default function DashboardScreen({ user }) {
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
                           }}>
-                            {trip.origin} → {trip.destination}
+                            {formatShortAddress(trip.origin)} → {formatShortAddress(trip.destination)}
                           </p>
                           <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>
                             {MODE_LABELS[trip.mode]}

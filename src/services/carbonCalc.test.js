@@ -36,3 +36,15 @@ test('getAllAlternatives getBestAlternative returns minimum', () => {
   // Per plan spec: getBestAlternative('ola_uber') === 'metro' is the expected test
   expect(['metro', 'cycle', 'walk']).toContain(best);
 });
+
+import { formatShortAddress } from '../utils/formatters';
+
+test('formatShortAddress returns normal short addresses', () => {
+  expect(formatShortAddress('vidhya gayatri homes, 7th cross road, green garden layout')).toBe('vidhya gayatri homes');
+  expect(formatShortAddress('Medchal Rd, Kandlakoya Village, Hyderabad')).toBe('Medchal Rd');
+});
+
+test('formatShortAddress combines short room/floor prefixes', () => {
+  expect(formatShortAddress('2nd floor, 134, 17th Cross Road')).toBe('2nd floor, 134');
+  expect(formatShortAddress('239/240, Bellary Rd, Indra Nagar')).toBe('239/240, Bellary Rd');
+});
