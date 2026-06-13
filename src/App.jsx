@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { HashRouter, Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import LandingScreen   from './screens/LandingScreen';
@@ -73,31 +73,50 @@ const GUEST_USER = {
 
 /* ── Animated mesh background ──────────────────────────────── */
 function BgCanvas() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const x = (e.clientX / window.innerWidth) - 0.5;
+      const y = (e.clientY / window.innerHeight) - 0.5;
+      if (canvasRef.current) {
+        canvasRef.current.style.setProperty('--mouse-x', `${x * 120}px`);
+        canvasRef.current.style.setProperty('--mouse-y', `${y * 120}px`);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <div className="bg-canvas" aria-hidden="true">
-      <div className="bg-blob bg-blob--1" />
-      <div className="bg-blob bg-blob--2" />
-      <div className="bg-blob bg-blob--3" />
+    <div ref={canvasRef} className="bg-canvas" aria-hidden="true">
+      <div className="bg-blob-wrap bg-blob-wrap--1">
+        <div className="bg-blob bg-blob--1" />
+      </div>
+      <div className="bg-blob-wrap bg-blob-wrap--2">
+        <div className="bg-blob bg-blob--2" />
+      </div>
+      <div className="bg-blob-wrap bg-blob-wrap--3">
+        <div className="bg-blob bg-blob--3" />
+      </div>
     </div>
   );
 }
 
-/* ── Guest banner ──────────────────────────────────────────── */
-function GuestBanner({ onSignIn }) {
+/* ── Guest warning toast ───────────────────────────────────── */
+function GuestToast({ message, onDone }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 5000);
+    return () => clearTimeout(t);
+  }, [onDone]);
+
   return (
-    <div className="guest-banner" role="status" aria-live="polite">
-      <span className="flex items-center gap-2">
+    <div className="toast-container" aria-live="polite">
+      <div className="toast toast--warning" role="status">
         <IconAlert size={16} />
-        Guest mode — trips aren't saved. Sign in to persist your data.
-      </span>
-      <button
-        type="button"
-        className="btn btn--sm btn--primary"
-        onClick={onSignIn}
-        aria-label="Sign in with Google to save trips"
-      >
-        Sign in
-      </button>
+        <span>{message}</span>
+      </div>
     </div>
   );
 }
@@ -272,20 +291,24 @@ export default function App() {
   const { user, authError, signIn, signOutUser } = useAuth();
   const [signingIn, setSigningIn] = useState(false);
   const [isGuest, setIsGuest]     = useState(false);
+  const [showGuestToast, setShowGuestToast] = useState(false);
 
   async function handleSignIn() {
     setSigningIn(true);
     setIsGuest(false);
+    setShowGuestToast(false);
     await signIn();
     setSigningIn(false);
   }
 
   function handleGuestMode() {
     setIsGuest(true);
+    setShowGuestToast(true);
   }
 
   function handleSignOut() {
     setIsGuest(false);
+    setShowGuestToast(false);
     signOutUser();
   }
 
@@ -320,8 +343,13 @@ export default function App() {
     <HashRouter>
       <BgCanvas />
 
-      {/* Guest banner (full-width above layout) */}
-      {isGuest && <GuestBanner onSignIn={handleSignIn} />}
+      {/* Guest Toast (popup briefly once) */}
+      {showGuestToast && (
+        <GuestToast
+          message="Guest mode — trips aren't saved. Sign in to persist your data."
+          onDone={() => setShowGuestToast(false)}
+        />
+      )}
 
       <div className="app-layout">
         {/* Sidebar — visible on desktop */}
