@@ -296,6 +296,43 @@ function TripResultCard({ result, onLog, onReset, saving, isGuest }) {
   );
 }
 
+/* ── Helper to resolve place ID from typed text if dropdown skipped ── */
+function resolvePlaceFromText(text) {
+  return new Promise((resolve) => {
+    if (!text || !window.google) {
+      resolve(null);
+      return;
+    }
+    // Try Geocoding first
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ address: text, componentRestrictions: { country: 'in' } }, (results, status) => {
+      if (status === 'OK' && results && results[0]) {
+        resolve({
+          place_id: results[0].place_id,
+          formatted_address: results[0].formatted_address
+        });
+      } else {
+        // Fallback to Places Autocomplete Service
+        try {
+          const service = new window.google.maps.places.AutocompleteService();
+          service.getPlacePredictions({ input: text, componentRestrictions: { country: 'in' } }, (predictions, status) => {
+            if (status === 'OK' && predictions && predictions[0]) {
+              resolve({
+                place_id: predictions[0].place_id,
+                formatted_address: predictions[0].description
+              });
+            } else {
+              resolve(null);
+            }
+          });
+        } catch (err) {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
+
 /* ── Main screen ───────────────────────────────────────────── */
 export default function LogTripScreen({ user }) {
   const navigate = useNavigate();
@@ -308,6 +345,12 @@ export default function LogTripScreen({ user }) {
   const [originPlaceId,  setOriginPlaceId]  = useState('');
   const [destAddress,    setDestAddress]    = useState('');
   const [destPlaceId,    setDestPlaceId]    = useState('');
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
   const [selectedMode,   setSelectedMode]   = useState('');
   const [calcState,      setCalcState]      = useState('idle');
   const [calcError,      setCalcError]      = useState('');
@@ -363,29 +406,73 @@ export default function LogTripScreen({ user }) {
   async function handleCalculate(e) {
     e.preventDefault();
     setCalcError('');
-    if (!originPlaceId) {
-      setCalcError('Please select an origin from the dropdown suggestions.');
-      originInputRef.current?.focus(); return;
-    }
-    if (!destPlaceId) {
-      setCalcError('Please select a destination from the dropdown suggestions.');
-      destinationInputRef.current?.focus(); return;
-    }
-    if (!selectedMode) {
-      setCalcError('Please select a transport mode.');
-      document.getElementById(`mode-ola_uber`)?.focus(); return;
-    }
+
+    let currentOriginId = originPlaceId;
+    let currentOriginAddr = originAddress;
+    let currentDestId = destPlaceId;
+    let currentDestAddr = destAddress;
 
     setCalcState('loading');
     try {
-      const distance_km         = await getRouteDistance(originPlaceId, destPlaceId);
+      // Resolve Origin if missing place ID
+      if (!currentOriginId) {
+        const text = originInputRef.current?.value || '';
+        if (text.trim()) {
+          const resolved = await resolvePlaceFromText(text);
+          if (resolved) {
+            currentOriginId = resolved.place_id;
+            currentOriginAddr = resolved.formatted_address;
+            setOriginPlaceId(resolved.place_id);
+            setOriginAddress(resolved.formatted_address);
+            if (originInputRef.current) originInputRef.current.value = resolved.formatted_address;
+          }
+        }
+      }
+
+      if (!currentOriginId) {
+        setCalcState('idle');
+        setCalcError('Please select an origin from the dropdown suggestions or enter a valid location.');
+        originInputRef.current?.focus();
+        return;
+      }
+
+      // Resolve Destination if missing place ID
+      if (!currentDestId) {
+        const text = destinationInputRef.current?.value || '';
+        if (text.trim()) {
+          const resolved = await resolvePlaceFromText(text);
+          if (resolved) {
+            currentDestId = resolved.place_id;
+            currentDestAddr = resolved.formatted_address;
+            setDestPlaceId(resolved.place_id);
+            setDestAddress(resolved.formatted_address);
+            if (destinationInputRef.current) destinationInputRef.current.value = resolved.formatted_address;
+          }
+        }
+      }
+
+      if (!currentDestId) {
+        setCalcState('idle');
+        setCalcError('Please select a destination from the dropdown suggestions or enter a valid location.');
+        destinationInputRef.current?.focus();
+        return;
+      }
+
+      if (!selectedMode) {
+        setCalcState('idle');
+        setCalcError('Please select a transport mode.');
+        document.getElementById(`mode-ola_uber`)?.focus();
+        return;
+      }
+
+      const distance_km         = await getRouteDistance(currentOriginId, currentDestId);
       const kg_co2              = calculateCO2(selectedMode, distance_km);
       const bestMode            = getBestAlternative(selectedMode);
       const bestKg              = calculateCO2(bestMode, distance_km);
       const savedKg             = getKgSaved(kg_co2, bestKg);
       setResult({
-        mode: selectedMode, origin: originAddress, destination: destAddress,
-        origin_place_id: originPlaceId, destination_place_id: destPlaceId,
+        mode: selectedMode, origin: currentOriginAddr, destination: currentDestAddr,
+        origin_place_id: currentOriginId, destination_place_id: currentDestId,
         distance_km, kg_co2, best_alternative_mode: bestMode, best_alternative_kg: bestKg,
         kg_saved_if_alt: savedKg, alternatives: getAllAlternatives(selectedMode, distance_km),
       });
@@ -462,6 +549,7 @@ export default function LogTripScreen({ user }) {
                     setOriginAddress(e.target.value);
                     if (!e.target.value) setOriginPlaceId('');
                   }}
+                  onKeyDown={handleKeyDown}
                   autoComplete="off"
                 />
               </div>
@@ -486,6 +574,7 @@ export default function LogTripScreen({ user }) {
                     setDestAddress(e.target.value);
                     if (!e.target.value) setDestPlaceId('');
                   }}
+                  onKeyDown={handleKeyDown}
                   autoComplete="off"
                 />
               </div>
