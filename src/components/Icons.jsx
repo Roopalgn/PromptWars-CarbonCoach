@@ -22,9 +22,10 @@ export function IconFlag({ size = 20, className = '' }) {
 export function IconCar({ size = 20, className = '' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9h-2" />
-      <circle cx="7.5" cy="17.5" r="2.5" />
-      <circle cx="17.5" cy="17.5" r="2.5" />
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+      <circle cx="7" cy="17" r="2" />
+      <circle cx="17" cy="17" r="2" />
+      <path d="M7 17h10" />
     </svg>
   );
 }
@@ -32,10 +33,12 @@ export function IconCar({ size = 20, className = '' }) {
 export function IconBus({ size = 20, className = '' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <path d="M8 6v6" /><path d="M15 6v6" />
-      <path d="M2 12h19.6" />
-      <path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3" />
-      <circle cx="7" cy="18" r="2" /><circle cx="15" cy="18" r="2" />
+      <rect x="4" y="3" width="16" height="12" rx="2" />
+      <path d="M4 10h16" />
+      <path d="M8 3v7" />
+      <path d="M16 3v7" />
+      <circle cx="7.5" cy="18.5" r="2.5" />
+      <circle cx="16.5" cy="18.5" r="2.5" />
     </svg>
   );
 }
@@ -43,10 +46,13 @@ export function IconBus({ size = 20, className = '' }) {
 export function IconTrain({ size = 20, className = '' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <rect x="4" y="3" width="16" height="16" rx="2" />
-      <path d="M4 11h16" /><path d="M12 3v8" />
-      <path d="m8 19-2 3" /><path d="m18 22-2-3" />
-      <circle cx="8.5" cy="15.5" r="1.5" /><circle cx="15.5" cy="15.5" r="1.5" />
+      <rect x="4" y="3" width="16" height="15" rx="2" />
+      <path d="M4 11h16" />
+      <path d="M12 3v8" />
+      <path d="m8 18-2 3" />
+      <path d="m16 18 2 3" />
+      <circle cx="8" cy="15" r="1.5" />
+      <circle cx="16" cy="15" r="1.5" />
     </svg>
   );
 }
@@ -54,9 +60,10 @@ export function IconTrain({ size = 20, className = '' }) {
 export function IconBike({ size = 20, className = '' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <circle cx="18.5" cy="17.5" r="3.5" /><circle cx="5.5" cy="17.5" r="3.5" />
-      <circle cx="15" cy="5" r="1" />
-      <path d="M12 17.5V14l-3-3 4-3 2 3h2" />
+      <circle cx="5.5" cy="17.5" r="3.5" />
+      <circle cx="18.5" cy="17.5" r="3.5" />
+      <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5-1.5-5.5L14 9h4" />
+      <path d="M8.5 17.5 11.5 12.5" />
     </svg>
   );
 }
@@ -84,10 +91,17 @@ export function IconUsers({ size = 20, className = '' }) {
 export function IconWalk({ size = 20, className = '' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <circle cx="13" cy="4" r="1" />
-      <path d="M7.5 17.5 10 12l3 3 1.5 2.5" />
-      <path d="M10 12 9 7l5.5 1.5L17 11" />
-      <path d="M9 7 7 4" />
+      <circle cx="12" cy="5" r="2" />
+      <path d="m9 22 3.5-6 1.5-4 1.5 2 1.5 6" />
+      <path d="m17 12-4-2-2 3" />
+    </svg>
+  );
+}
+
+export function IconMinus({ size = 20, className = '' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
   );
 }
@@ -192,14 +206,17 @@ export function ModeIcon({ mode, size = 20 }) {
   return icons[mode] ?? <IconCar size={size} />;
 }
 
-function AutoRickshawIcon({ size = 20 }) {
-  // Custom auto-rickshaw (3-wheeler) SVG
+function AutoRickshawIcon({ size = 20, className = '' }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M5 17H3a1 1 0 0 1-1-1v-4l3-5h10l2 5v4a1 1 0 0 1-1 1h-1" />
-      <circle cx="7.5" cy="17.5" r="1.5" />
-      <circle cx="14.5" cy="17.5" r="1.5" />
-      <path d="M5 7V5" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <rect x="6" y="5" width="12" height="6" rx="1" />
+      <path d="M4 11h16v4c0 1.5-1 2.5-2.5 2.5h-11C5 17.5 4 16.5 4 15v-4z" />
+      <circle cx="6.5" cy="19.5" r="1.5" />
+      <circle cx="17.5" cy="19.5" r="1.5" />
+      <circle cx="12" cy="20" r="1.5" />
+      <circle cx="8" cy="14" r="1" />
+      <circle cx="16" cy="14" r="1" />
+      <path d="M11 14h2" />
     </svg>
   );
 }

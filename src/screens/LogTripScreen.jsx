@@ -10,6 +10,7 @@ import {
 } from '../services/carbonCalc';
 import { MODE_LABELS, EMISSIONS_FACTORS } from '../config/emissionsFactors';
 import { roundCO2 } from '../utils/formatters';
+import ModeSelector from '../components/ModeSelector';
 
 /* ── SVG Icons ─────────────────────────────────────────────── */
 function IconMapPin({ size = 18 }) {
@@ -67,75 +68,7 @@ function IconSave({ size = 18 }) {
   );
 }
 
-/* ── Mode SVG icons ────────────────────────────────────────── */
-const MODE_ICONS = {
-  ola_uber: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-      <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-    </svg>
-  ),
-  auto: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9h-2"/>
-      <circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>
-    </svg>
-  ),
-  bus: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 6v6m8-6v6M2 12h20M4 6h16a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/>
-      <path d="M7 17v2M17 17v2"/>
-    </svg>
-  ),
-  metro: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="4" y="2" width="16" height="16" rx="2"/><path d="M4 10h16M12 2v16M4 18l-1 2M20 18l1 2M8 14h0M16 14h0"/>
-    </svg>
-  ),
-  carpool: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-    </svg>
-  ),
-  cycle: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/>
-      <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5L9 10l5 1 4-4"/>
-    </svg>
-  ),
-  walk: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="5" r="1"/><path d="m9 20 3-8 3 3 2-5m-4-5-2 5 2 3"/>
-      <path d="m12 7-2 5 3 3"/>
-    </svg>
-  ),
-};
 
-/* ── Mode selector ─────────────────────────────────────────── */
-function ModeSelector({ selected, onChange }) {
-  const modes = Object.keys(MODE_LABELS);
-  return (
-    <div className="mode-grid" role="radiogroup" aria-label="Select transport mode">
-      {modes.map((m) => (
-        <button
-          key={m}
-          id={`mode-${m}`}
-          type="button"
-          role="radio"
-          aria-checked={selected === m}
-          className={`mode-btn ${selected === m ? 'selected' : ''}`}
-          onClick={() => onChange(m)}
-          aria-label={MODE_LABELS[m]}
-        >
-          <span aria-hidden="true">{MODE_ICONS[m]}</span>
-          {MODE_LABELS[m]}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 /* ── CO₂ level helper ──────────────────────────────────────── */
 function co2Level(kg) {

@@ -9,6 +9,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
@@ -78,4 +79,15 @@ export async function getLatestInsight(uid) {
   const ref = doc(db, 'users', uid, 'insights', 'latest');
   const snap = await getDoc(ref);
   return snap.exists() ? snap.data() : null;
+}
+
+/**
+ * Delete a trip from Firestore.
+ * @param {string} uid
+ * @param {string} tripId
+ * @returns {Promise<void>}
+ */
+export async function deleteTrip(uid, tripId) {
+  const ref = doc(db, 'users', uid, 'trips', tripId);
+  return deleteDoc(ref);
 }

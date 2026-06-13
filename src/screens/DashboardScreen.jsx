@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTrips } from '../hooks/useTrips';
-import { getLatestInsight, saveInsight } from '../services/firestore';
+import { getLatestInsight, saveInsight, deleteTrip } from '../services/firestore';
+import { ModeIcon, IconMinus } from '../components/Icons';
 import { generateInsight } from '../services/gemini';
 import { roundCO2, formatDate, formatDayLabel, getLast7Days, isThisWeek, formatShortAddress } from '../utils/formatters';
 import { MODE_LABELS } from '../config/emissionsFactors';
@@ -101,24 +102,7 @@ const CHART_MONO = "'Fira Code', monospace";
 const GRID_COLOR  = 'rgba(255,255,255,0.05)';
 const TICK_COLOR  = '#475569';
 
-/* ── Mode icon SVGs for the trip list ─────────────────────── */
-const MODE_ICON_PATHS = {
-  ola_uber: <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>,
-  auto:     <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9h-2" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>,
-  bus:      <path d="M4 6h16a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z M4 12h16 M7 17v2 M17 17v2" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>,
-  metro:    <rect x="4" y="2" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>,
-  carpool:  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>,
-  cycle:    <><circle cx="5.5" cy="17.5" r="3.5" stroke="currentColor" strokeWidth="2" fill="none"/><circle cx="18.5" cy="17.5" r="3.5" stroke="currentColor" strokeWidth="2" fill="none"/></>,
-  walk:     <><circle cx="12" cy="5" r="1" fill="currentColor"/><path d="m9 20 3-8 3 3 2-5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></>,
-};
 
-function ModeIcon({ mode, size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      {MODE_ICON_PATHS[mode]}
-    </svg>
-  );
-}
 
 /* ── Insight card ──────────────────────────────────────────── */
 function InsightCard({ insight }) {
@@ -178,12 +162,40 @@ function KpiCard({ icon, value, unit, label, colorClass, iconClass }) {
 export default function DashboardScreen({ user }) {
   const isGuest = user?.isGuest;
 
+  const [deletedSeedIds, setDeletedSeedIds] = useState(() => {
+    const stored = localStorage.getItem('carboncoach_deleted_seed_trips');
+    return stored ? JSON.parse(stored) : [];
+  });
+
   /* For guests, combine their local trips with seed data; for real users, use Firestore */
   const { trips: loadedTrips, tripsLoading } = useTrips(user?.uid);
-  const trips = isGuest
+  const rawTrips = isGuest
     ? [...(Array.isArray(loadedTrips) ? loadedTrips : []), ...SEED_TRIPS]
     : (Array.isArray(loadedTrips) ? loadedTrips : []);
+  const trips = rawTrips.filter((t) => !deletedSeedIds.includes(t.id));
   const loading = tripsLoading;
+
+  const handleDeleteTrip = async (tripId) => {
+    try {
+      if (isGuest) {
+        if (tripId.startsWith('guest_')) {
+          const stored = localStorage.getItem('carboncoach_guest_trips');
+          const guestTrips = stored ? JSON.parse(stored) : [];
+          const updated = guestTrips.filter((t) => t.id !== tripId);
+          localStorage.setItem('carboncoach_guest_trips', JSON.stringify(updated));
+          window.dispatchEvent(new Event('storage'));
+        } else {
+          const updatedSeeds = [...deletedSeedIds, tripId];
+          setDeletedSeedIds(updatedSeeds);
+          localStorage.setItem('carboncoach_deleted_seed_trips', JSON.stringify(updatedSeeds));
+        }
+      } else {
+        await deleteTrip(user.uid, tripId);
+      }
+    } catch (err) {
+      console.error('Failed to delete trip:', err);
+    }
+  };
 
   const [insight, setInsight]         = useState(null);
   const [insightLoading, setIL]       = useState(false);
@@ -557,17 +569,33 @@ export default function DashboardScreen({ user }) {
                         aria-label={`${MODE_LABELS[trip.mode] ?? trip.mode} from ${trip.origin} to ${trip.destination}`}
                       >
                         {/* Mode icon badge */}
-                        <div style={{
-                          width: 40, height: 40,
-                          borderRadius: 'var(--r-md)',
-                          background: `${MODE_COLORS[trip.mode] ?? '#64748b'}20`,
-                          border: `1px solid ${MODE_COLORS[trip.mode] ?? '#64748b'}40`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          color: MODE_COLORS[trip.mode] ?? '#64748b',
-                          flexShrink: 0,
-                        }}>
-                          <ModeIcon mode={trip.mode} size={18} />
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteTrip(trip.id)}
+                          className="trip-delete-btn"
+                          title="Click to remove this entry"
+                          aria-label={`Remove trip: ${MODE_LABELS[trip.mode] ?? trip.mode} from ${trip.origin} to ${trip.destination}`}
+                          style={{
+                            width: 40, height: 40,
+                            borderRadius: 'var(--r-md)',
+                            background: `${MODE_COLORS[trip.mode] ?? '#64748b'}20`,
+                            border: `1px solid ${MODE_COLORS[trip.mode] ?? '#64748b'}40`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: MODE_COLORS[trip.mode] ?? '#64748b',
+                            flexShrink: 0,
+                            cursor: 'pointer',
+                            padding: 0,
+                            position: 'relative',
+                            transition: 'all var(--dur-base)',
+                          }}
+                        >
+                          <span className="mode-icon-default" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <ModeIcon mode={trip.mode} size={18} />
+                          </span>
+                          <span className="mode-icon-delete" style={{ display: 'none', alignItems: 'center', justifyContent: 'center' }}>
+                            <IconMinus size={18} />
+                          </span>
+                        </button>
 
                         {/* Route info */}
                         <div style={{ flex: 1, minWidth: 0 }}>

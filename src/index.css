@@ -1683,3 +1683,20 @@ input, select, textarea {
 .text-xs { font-size: var(--text-xs); }
 .font-mono { font-family: var(--font-mono); }
 .font-semi { font-weight: var(--w-semi); }
+
+/* ── Trip entry delete button ──────────────────────────────── */
+.trip-delete-btn .mode-icon-delete {
+  display: none !important;
+}
+.trip-delete-btn:hover .mode-icon-default {
+  display: none !important;
+}
+.trip-delete-btn:hover .mode-icon-delete {
+  display: flex !important;
+}
+.trip-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  color: var(--c-danger) !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+}
