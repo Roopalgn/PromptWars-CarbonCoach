@@ -178,10 +178,10 @@ function KpiCard({ icon, value, unit, label, colorClass, iconClass }) {
 export default function DashboardScreen({ user }) {
   const isGuest = user?.isGuest;
 
-  /* For guests, use seed data; for real users, use Firestore */
-  const { trips: realTrips, tripsLoading } = useTrips(isGuest ? null : user.uid);
-  const trips = isGuest ? SEED_TRIPS : realTrips;
-  const loading = isGuest ? false : tripsLoading;
+  /* For guests, combine their local trips with seed data; for real users, use Firestore */
+  const { trips: loadedTrips, tripsLoading } = useTrips(user?.uid);
+  const trips = isGuest ? [...loadedTrips, ...SEED_TRIPS] : loadedTrips;
+  const loading = tripsLoading;
 
   const [insight, setInsight]         = useState(null);
   const [insightLoading, setIL]       = useState(false);

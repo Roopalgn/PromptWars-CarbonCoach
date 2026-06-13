@@ -124,7 +124,7 @@ function GuestProfile({ onSignIn }) {
 export default function ProfileScreen({ user, onSignOut, onSignIn }) {
   const isGuest = user?.isGuest;
 
-  const { trips, tripsLoading } = useTrips(isGuest ? null : user.uid);
+  const { trips, tripsLoading } = useTrips(user?.uid);
 
   // Lifetime stats
   const totalTrips    = trips.length;

@@ -401,8 +401,18 @@ export default function LogTripScreen({ user }) {
     setSaving(true);
     try {
       if (isGuest) {
-        // Guest mode: in-session only
+        // Guest mode: save to local storage
         await new Promise((r) => setTimeout(r, 400));
+        const stored = localStorage.getItem('carboncoach_guest_trips');
+        const guestTrips = stored ? JSON.parse(stored) : [];
+        const newTrip = {
+          ...result,
+          id: `guest_${Date.now()}`,
+          timestamp: new Date().toISOString()
+        };
+        guestTrips.unshift(newTrip);
+        localStorage.setItem('carboncoach_guest_trips', JSON.stringify(guestTrips));
+        
         setToast('Trip logged locally (sign in to save)');
         navigate('/dashboard');
       } else {

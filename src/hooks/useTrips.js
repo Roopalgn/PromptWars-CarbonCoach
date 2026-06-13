@@ -3,7 +3,7 @@ import { subscribeToTrips } from '../services/firestore';
 
 /**
  * Real-time subscription to the current user's trips.
- * Updates automatically via Firestore onSnapshot.
+ * Updates automatically via Firestore onSnapshot or loads from localStorage for guests.
  */
 export function useTrips(uid) {
   const [trips, setTrips] = useState([]);
@@ -14,6 +14,30 @@ export function useTrips(uid) {
       setTrips([]);
       setTripsLoading(false);
       return;
+    }
+
+    if (uid === 'guest') {
+      setTripsLoading(true);
+      const loadGuestTrips = () => {
+        const stored = localStorage.getItem('carboncoach_guest_trips');
+        if (stored) {
+          try {
+            setTrips(JSON.parse(stored));
+          } catch (e) {
+            console.error('Error parsing guest trips', e);
+            setTrips([]);
+          }
+        } else {
+          setTrips([]);
+        }
+        setTripsLoading(false);
+      };
+
+      loadGuestTrips();
+
+      // Listen for updates from other tabs/screens
+      window.addEventListener('storage', loadGuestTrips);
+      return () => window.removeEventListener('storage', loadGuestTrips);
     }
 
     setTripsLoading(true);
