@@ -182,6 +182,10 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
                   <span className="kpi-unit">kg</span>
                 </div>
                 <div className="kpi-label">Could have saved by taking best alternative</div>
+                <div className="kpi-badge kpi-badge--green mt-2" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '4px', background: 'rgba(16,185,129,0.1)', fontSize: '0.8rem', fontWeight: 600, color: 'var(--c-primary)' }}>
+                  <IconLeaf size={12} />
+                  Equivalent to planting {Math.max(0, Math.round((totalSavedPot / 20) * 10) / 10)} trees yearly offset
+                </div>
               </div>
             </div>
           )}
