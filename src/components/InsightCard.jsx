@@ -27,7 +27,7 @@ export default function InsightCard({ insight }) {
 
       {insight.top_action && (
         <p className="insight-body">
-          <strong className="insight-strong">Tomorrow's move:</strong>{' '}
+          <strong className="insight-strong">Tomorrow&apos;s move:</strong>{' '}
           {insight.top_action}
         </p>
       )}

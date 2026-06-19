@@ -17,14 +17,16 @@ export function useTrips(uid) {
 
   useEffect(() => {
     if (!uid) {
-      setTrips([]);
-      setTripsLoading(false);
+      Promise.resolve().then(() => {
+        setTrips([]);
+        setTripsLoading(false);
+      });
       return;
     }
 
     if (uid === 'guest') {
-      setTripsLoading(true);
       const loadGuestTrips = () => {
+        setTripsLoading(true);
         const stored = localStorage.getItem('carboncoach_guest_trips');
         if (stored) {
           try {
@@ -40,20 +42,30 @@ export function useTrips(uid) {
         setTripsLoading(false);
       };
 
-      loadGuestTrips();
+      Promise.resolve().then(() => {
+        loadGuestTrips();
+      });
 
       // Listen for updates from other tabs/screens
       window.addEventListener('storage', loadGuestTrips);
       return () => window.removeEventListener('storage', loadGuestTrips);
     }
 
-    setTripsLoading(true);
+    let active = true;
+    Promise.resolve().then(() => {
+      if (active) {
+        setTripsLoading(true);
+      }
+    });
     const unsubscribe = subscribeToTrips(uid, (newTrips) => {
       setTrips(newTrips);
       setTripsLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, [uid]);
 
   return { trips, tripsLoading };

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { HashRouter, Routes, Route, Navigate, NavLink } from 'react-router-dom';
+import { useState } from 'react';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import LandingScreen   from './screens/LandingScreen';
 import LogTripScreen   from './screens/LogTripScreen';

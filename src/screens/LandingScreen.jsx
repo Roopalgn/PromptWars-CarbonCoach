@@ -3,21 +3,7 @@ import { IconActivity, IconLeaf, IconMapPin, IconBarChart2 as IconBarChart, Icon
 
 
 
-/* ── Scroll-in animation hook ──────────────────────────────── */
-function useReveal() {
-  const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) el.classList.add('in-view'); },
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-  return ref;
-}
+
 
 function RevealCard({ children, delay = 0, className = '' }) {
   const ref = useRef(null);
@@ -154,7 +140,7 @@ export default function LandingScreen({ onSignIn, onGuestMode, authError, signin
         <section className="landing-hero" aria-labelledby="hero-headline">
           <div className="hero-eyebrow" aria-hidden="true">
             <IconLeaf size={12} />
-            India's Carbon Commute Tracker
+            India&apos;s Carbon Commute Tracker
           </div>
 
           <h1 id="hero-headline" className="hero-headline">
@@ -247,7 +233,7 @@ export default function LandingScreen({ onSignIn, onGuestMode, authError, signin
                 Features
               </div>
               <h2 id="features-heading" className="heading-lg text-primary">
-                Built for <span className="text-gradient-green">India's commuters</span>
+                Built for <span className="text-gradient-green">India&apos;s commuters</span>
               </h2>
               <p className="features-intro">
                 Real emission factors from CPCB 2023, CEA 2024, and IEA — not generic global averages.

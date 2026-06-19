@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTrips } from '../hooks/useTrips';
 import { roundCO2 } from '../utils/formatters';
 import { INDIA_DAILY_AVERAGE_KG } from '../config/emissionsFactors';
@@ -75,12 +76,14 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
   const totalKg       = trips.reduce((s, t) => s + (t.kg_co2 ?? 0), 0);
   const totalSavedPot = trips.reduce((s, t) => s + (t.kg_saved_if_alt > 0 ? t.kg_saved_if_alt : 0), 0);
 
+  const [mountTime] = useState(() => Date.now());
+
   // Daily average
   const tripsWithDate = trips.filter((t) => t.timestamp);
   let userDailyAvg = 0;
   if (tripsWithDate.length > 0) {
-    const oldest = tripsWithDate[tripsWithDate.length - 1]?.timestamp?.toDate?.() ?? new Date();
-    const days   = Math.max(1, Math.ceil((Date.now() - oldest.getTime()) / 86400000));
+    const oldest = tripsWithDate[tripsWithDate.length - 1]?.timestamp?.toDate?.() ?? new Date(mountTime);
+    const days   = Math.max(1, Math.ceil((mountTime - oldest.getTime()) / 86400000));
     userDailyAvg = roundCO2(totalKg / days);
   }
 
@@ -119,7 +122,7 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
             <img
               className="profile-avatar"
               src={user.photoURL}
-              alt={`${user.displayName ?? 'User'}'s profile picture`}
+              alt={user.displayName ?? 'User'}
               referrerPolicy="no-referrer"
             />
           ) : (

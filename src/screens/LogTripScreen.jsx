@@ -8,20 +8,16 @@ import {
   getKgSaved,
   getAllAlternatives,
 } from '../services/carbonCalc';
-import { MODE_LABELS, EMISSIONS_FACTORS } from '../config/emissionsFactors';
-import { roundCO2 } from '../utils/formatters';
+
 import {
   IconMapPin,
   IconFlag,
   IconAlertCircle,
-  IconCheck,
-  IconRefresh,
-  IconSave,
 } from '../components/Icons';
 import ModeSelector from '../components/ModeSelector';
 import TripResultCard from '../components/TripResultCard';
 import Toast from '../components/Toast';
-import { MODE_BAR_CLASS } from '../config/constants';
+
 
 
 

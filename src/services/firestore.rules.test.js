@@ -1,8 +1,13 @@
 import { test } from 'vitest';
 import { assertFails, assertSucceeds, initializeTestEnvironment } from '@firebase/rules-unit-testing';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import fs from 'fs';
 import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 test('user cannot read another user\'s trips', async () => {
   // Check if local Firestore emulator is running
