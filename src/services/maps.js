@@ -66,3 +66,47 @@ export async function getRouteDistance(originPlaceId, destinationPlaceId) {
   const distanceMeters = data.routes[0].distanceMeters;
   return Math.round(distanceMeters / 10) / 100; // metres → km, 2 dp
 }
+
+/**
+ * Resolves a place ID and formatted address from free-form text.
+ * Uses only the Google Maps Geocoder, making it completely DOM-free.
+ * 
+ * @param {string} text - Address text to resolve
+ * @param {Object} [coords] - Location coordinates for biasing search
+ * @param {number} coords.lat - Latitude
+ * @param {number} coords.lng - Longitude
+ * @returns {Promise<Object|null>} resolved place details or null
+ */
+export function resolvePlaceFromText(text, coords) {
+  return new Promise((resolve) => {
+    if (!text || !window.google || !window.google.maps) {
+      resolve(null);
+      return;
+    }
+
+    try {
+      const geocoder = new window.google.maps.Geocoder();
+      const geocodeOpts = {
+        address: text,
+        componentRestrictions: { country: 'in' },
+      };
+      if (coords) {
+        geocodeOpts.location = new window.google.maps.LatLng(coords.lat, coords.lng);
+      }
+      geocoder.geocode(geocodeOpts, (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          const place = results[0];
+          resolve({
+            place_id: place.place_id,
+            formatted_address: place.formatted_address || text,
+          });
+        } else {
+          resolve(null);
+        }
+      });
+    } catch (err) {
+      resolve(null);
+    }
+  });
+}
+

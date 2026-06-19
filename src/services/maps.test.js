@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { loadMapsApi, getRouteDistance } from './maps';
+import { loadMapsApi, getRouteDistance, resolvePlaceFromText } from './maps';
 
 // Mock global fetch
 global.fetch = vi.fn();
@@ -292,6 +292,76 @@ describe('maps service', () => {
       } catch (err) {
         expect(err).toBeTruthy();
       }
+    });
+  });
+
+  describe('resolvePlaceFromText', () => {
+    beforeEach(() => {
+      global.google = {
+        maps: {
+          Geocoder: class {
+            geocode(opts, callback) {
+              if (opts.address === 'valid') {
+                callback([{ place_id: '123', formatted_address: 'Geocoded Address' }], 'OK');
+              } else {
+                callback(null, 'ZERO_RESULTS');
+              }
+            }
+          },
+          LatLng: class {
+            constructor(lat, lng) {
+              this.lat = lat;
+              this.lng = lng;
+            }
+          }
+        }
+      };
+    });
+
+    it('returns null if input text is empty', async () => {
+      const res = await resolvePlaceFromText('', null);
+      expect(res).toBeNull();
+    });
+
+    it('returns null if google object is not present', async () => {
+      const oldGoogle = global.google;
+      delete global.google;
+      const res = await resolvePlaceFromText('valid', null);
+      expect(res).toBeNull();
+      global.google = oldGoogle;
+    });
+
+    it('returns place details if geocoder returns OK', async () => {
+      const res = await resolvePlaceFromText('valid', null);
+      expect(res).toEqual({
+        place_id: '123',
+        formatted_address: 'Geocoded Address'
+      });
+    });
+
+    it('uses location bias if coordinates are provided', async () => {
+      const geocodeSpy = vi.fn((opts, callback) => {
+        callback([{ place_id: '123', formatted_address: 'Geocoded Address' }], 'OK');
+      });
+      global.google.maps.Geocoder = class {
+        geocode = geocodeSpy;
+      };
+      const res = await resolvePlaceFromText('valid', { lat: 12.97, lng: 77.59 });
+      expect(geocodeSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          location: expect.any(global.google.maps.LatLng)
+        }),
+        expect.any(Function)
+      );
+      expect(res).toEqual({
+        place_id: '123',
+        formatted_address: 'Geocoded Address'
+      });
+    });
+
+    it('returns null if geocoder returns zero results', async () => {
+      const res = await resolvePlaceFromText('invalid', null);
+      expect(res).toBeNull();
     });
   });
 });

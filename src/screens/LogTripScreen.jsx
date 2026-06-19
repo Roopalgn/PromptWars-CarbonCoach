@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loadMapsApi, getRouteDistance } from '../services/maps';
+import { loadMapsApi, getRouteDistance, resolvePlaceFromText } from '../services/maps';
 import { saveTrip } from '../services/firestore';
 import {
   calculateCO2,
@@ -29,86 +29,7 @@ import { MODE_BAR_CLASS } from '../config/constants';
 
 
 
-/* ── Helper to resolve place ID from typed text if dropdown skipped ── */
-function resolvePlaceFromText(text, coords) {
-  return new Promise((resolve) => {
-    if (!text || !window.google) {
-      resolve(null);
-      return;
-    }
-    
-    const getPlaceId = () => {
-      return new Promise((res) => {
-        const geocoder = new window.google.maps.Geocoder();
-        const geocodeOpts = {
-          address: text,
-          componentRestrictions: { country: 'in' },
-        };
-        if (coords) {
-          geocodeOpts.location = new window.google.maps.LatLng(coords.lat, coords.lng);
-        }
-        geocoder.geocode(geocodeOpts, (results, status) => {
-          if (status === 'OK' && results && results[0]) {
-            res(results[0].place_id);
-          } else {
-            try {
-              const service = new window.google.maps.places.AutocompleteService();
-              const autoOpts = {
-                input: text,
-                componentRestrictions: { country: 'in' },
-              };
-              if (coords) {
-                autoOpts.locationBias = new window.google.maps.LatLng(coords.lat, coords.lng);
-              }
-              service.getPlacePredictions(autoOpts, (predictions, status) => {
-                if (status === 'OK' && predictions && predictions[0]) {
-                  res(predictions[0].place_id);
-                } else {
-                  res(null);
-                }
-              });
-            } catch (err) {
-              res(null);
-            }
-          }
-        });
-      });
-    };
 
-    getPlaceId().then((placeId) => {
-      if (!placeId) {
-        resolve(null);
-        return;
-      }
-      
-      try {
-        const dummy = document.createElement('div');
-        const service = new window.google.maps.places.PlacesService(dummy);
-        service.getDetails({ placeId, fields: ['name', 'formatted_address', 'place_id'] }, (place, status) => {
-          if (status === 'OK' && place) {
-            const name = place.name;
-            const address = place.formatted_address || '';
-            const fullAddress = (name && !address.startsWith(name)) ? `${name}, ${address}` : address;
-            resolve({
-              place_id: place.place_id,
-              formatted_address: fullAddress
-            });
-          } else {
-            resolve({
-              place_id: placeId,
-              formatted_address: text
-            });
-          }
-        });
-      } catch (err) {
-        resolve({
-          place_id: placeId,
-          formatted_address: text
-        });
-      }
-    });
-  });
-}
 
 /* ── Main screen ───────────────────────────────────────────── */
 export default function LogTripScreen({ user }) {
