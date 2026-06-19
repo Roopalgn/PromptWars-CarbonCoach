@@ -4,7 +4,7 @@
 
 **[Live Demo](https://carboncoach-f8d95.web.app)**
 
-![CarbonCoach Preview](public/preview.png)
+![CarbonCoach Preview](<img width="687" height="857" alt="image" src="https://github.com/user-attachments/assets/27148d43-b02a-4b6e-920e-904297e621f0" />)
 
 A context-aware personal carbon action coach for urban Indian commuters. Log a trip, see your real CO₂, and instantly discover the greener alternative.
 
