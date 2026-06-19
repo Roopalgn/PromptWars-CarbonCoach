@@ -30,7 +30,16 @@ test("user cannot read another user's trips", async () => {
   const aliceTripRef = doc(aliceDb, 'users/alice/trips/t1');
   const bobTripRef = doc(bobDb, 'users/alice/trips/t1');
 
-  await assertSucceeds(setDoc(aliceTripRef, { mode: 'metro' }));
+  const validTrip = {
+    origin: 'A',
+    destination: 'B',
+    mode: 'metro',
+    distance_km: 10,
+    kg_co2: 1.5,
+    timestamp: new Date().toISOString()
+  };
+
+  await assertSucceeds(setDoc(aliceTripRef, validTrip));
   await assertFails(getDoc(bobTripRef));
   await assertSucceeds(getDoc(aliceTripRef));
 
@@ -38,7 +47,14 @@ test("user cannot read another user's trips", async () => {
   const aliceInsightRef = doc(aliceDb, 'users/alice/insights/latest');
   const bobInsightRef = doc(bobDb, 'users/alice/insights/latest');
 
-  await assertSucceeds(setDoc(aliceInsightRef, { summary: 'Good job' }));
+  const validInsight = {
+    summary: 'Good job',
+    top_action: 'Take bus',
+    encouragement: 'Keep it up',
+    timestamp: new Date().toISOString()
+  };
+
+  await assertSucceeds(setDoc(aliceInsightRef, validInsight));
   await assertFails(getDoc(bobInsightRef));
   await assertSucceeds(getDoc(aliceInsightRef));
 
