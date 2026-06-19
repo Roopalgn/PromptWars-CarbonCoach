@@ -8,6 +8,7 @@ import ProfileScreen   from './screens/ProfileScreen';
 import { GUEST_USER } from './config/constants';
 import LoadingShell from './components/LoadingShell';
 import TopBar from './components/TopBar';
+import BottomNav from './components/BottomNav';
 
 /**
  * @file App.jsx
@@ -261,42 +262,7 @@ function Sidebar({ user, onSignOut, onSignIn, isGuest }) {
   );
 }
 
-/**
- * Bottom navigation bar visible on mobile and tablet viewport widths.
- * Handles primary route switches using React Router NavLinks.
- * @returns {JSX.Element}
- */
-function BottomNav() {
-  return (
-    <nav className="bottom-nav" aria-label="Mobile navigation">
-      <NavLink
-        to="/"
-        end
-        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-        aria-label="Log a trip"
-      >
-        <IconRoute size={22} />
-        Log Trip
-      </NavLink>
-      <NavLink
-        to="/dashboard"
-        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-        aria-label="Dashboard"
-      >
-        <IconBarChart size={22} />
-        Dashboard
-      </NavLink>
-      <NavLink
-        to="/profile"
-        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-        aria-label="Profile"
-      >
-        <IconUser size={22} />
-        Profile
-      </NavLink>
-    </nav>
-  );
-}
+
 
 
 
