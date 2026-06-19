@@ -1,7 +1,7 @@
 import { MODE_LABELS } from '../config/emissionsFactors';
 import { MODE_BAR_CLASS } from '../config/constants';
 import { roundCO2 } from '../utils/formatters';
-import { IconSave, IconRefresh } from './Icons';
+import { IconSave, IconRefresh, IconBarChart2 } from './Icons';
 
 /**
  * Determine the emission impact level key based on kg CO2.
@@ -91,10 +91,7 @@ export default function TripResultCard({ result, onLog, onReset, saving, isGuest
       {/* Comparison bars */}
       <div className="section-header mb-3">
         <span className="chart-title mb-0">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-            <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
-          </svg>
+          <IconBarChart2 size={14} />
           Alternatives for this route
         </span>
       </div>

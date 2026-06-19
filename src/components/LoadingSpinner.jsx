@@ -1,3 +1,5 @@
+import { IconSpinner } from './Icons';
+
 export default function LoadingSpinner({ size = 28, label = 'Loading…' }) {
   return (
     <div
@@ -6,24 +8,7 @@ export default function LoadingSpinner({ size = 28, label = 'Loading…' }) {
       aria-label={label}
       aria-live="polite"
     >
-      <svg
-        className="spinner"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-      >
-        <circle
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeDasharray="40 60"
-        />
-      </svg>
+      <IconSpinner size={size} />
       <span className="sr-only">{label}</span>
     </div>
   );

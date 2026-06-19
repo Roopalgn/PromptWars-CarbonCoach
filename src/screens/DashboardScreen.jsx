@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, memo } from 'react';
 import { useTrips } from '../hooks/useTrips';
 import { getLatestInsight, saveInsight, deleteTrip } from '../services/firestore';
-import { ModeIcon, IconMinus, IconLeaf, IconBarChart2 as IconBarChart, IconPieChart, IconTrendingUp as IconTrendUp, IconClock, IconStar } from '../components/Icons';
+import { ModeIcon, IconMinus, IconLeaf, IconBarChart2 as IconBarChart, IconPieChart, IconTrendingUp as IconTrendUp, IconClock, IconStar, IconLock } from '../components/Icons';
 import KpiCard from '../components/KpiCard';
 import { generateInsight } from '../services/gemini';
 import { roundCO2, formatDate, formatDayLabel, getLast7Days, isThisWeek, formatShortAddress } from '../utils/formatters';
@@ -405,10 +405,7 @@ export default function DashboardScreen({ user }) {
             {trips.length < 5 && (
               <div className="insight-card mb-6 insight-card--locked" style={{ opacity: 0.85, borderStyle: 'dashed' }}>
                 <div className="insight-badge" style={{ background: 'rgba(245,158,11,0.1)', color: 'var(--c-warning)' }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 4 }} aria-hidden="true">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
+                  <IconLock size={12} style={{ marginRight: 4 }} />
                   Gemini AI — Locked
                 </div>
                 <p className="insight-headline" style={{ fontSize: '0.95rem' }}>

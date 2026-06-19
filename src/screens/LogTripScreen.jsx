@@ -13,6 +13,7 @@ import {
   IconMapPin,
   IconFlag,
   IconAlertCircle,
+  IconActivity,
 } from '../components/Icons';
 import ModeSelector from '../components/ModeSelector';
 import TripResultCard from '../components/TripResultCard';
@@ -342,9 +343,7 @@ export default function LogTripScreen({ user }) {
                 <><div className="spinner" style={{ width: 20, height: 20 }} />Calculating route…</>
               ) : (
                 <>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                  </svg>
+                  <IconActivity size={18} />
                   Calculate &amp; Compare
                 </>
               )}
