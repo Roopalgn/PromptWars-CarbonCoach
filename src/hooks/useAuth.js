@@ -23,7 +23,8 @@ export function useAuth() {
     setAuthError(null);
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch {
+    } catch (err) {
+      console.error('Google Sign-In Error:', err);
       setAuthError('Sign-in failed. Please try again.');
     }
   }
