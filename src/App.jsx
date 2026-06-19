@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
-import LandingScreen   from './screens/LandingScreen';
-import LogTripScreen   from './screens/LogTripScreen';
-import DashboardScreen from './screens/DashboardScreen';
-import ProfileScreen   from './screens/ProfileScreen';
+const LandingScreen   = lazy(() => import('./screens/LandingScreen'));
+const LogTripScreen   = lazy(() => import('./screens/LogTripScreen'));
+const DashboardScreen = lazy(() => import('./screens/DashboardScreen'));
+const ProfileScreen   = lazy(() => import('./screens/ProfileScreen'));
 import { GUEST_USER } from './config/constants';
 import LoadingShell from './components/LoadingShell';
 import TopBar from './components/TopBar';
@@ -84,12 +84,14 @@ export default function App() {
     return (
       <>
         <BgCanvas />
-        <LandingScreen
-          onSignIn={handleSignIn}
-          onGuestMode={handleGuestMode}
-          authError={authError}
-          signingIn={signingIn}
-        />
+        <Suspense fallback={<LoadingShell />}>
+          <LandingScreen
+            onSignIn={handleSignIn}
+            onGuestMode={handleGuestMode}
+            authError={authError}
+            signingIn={signingIn}
+          />
+        </Suspense>
       </>
     );
   }
@@ -123,27 +125,29 @@ export default function App() {
           {/* Top bar — visible on mobile */}
           <TopBar />
 
-          <Routes>
-            <Route
-              path="/"
-              element={<LogTripScreen user={activeUser} />}
-            />
-            <Route
-              path="/dashboard"
-              element={<DashboardScreen user={activeUser} />}
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProfileScreen
-                  user={activeUser}
-                  onSignOut={handleSignOut}
-                  onSignIn={handleSignIn}
-                />
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Suspense fallback={<LoadingShell />}>
+            <Routes>
+              <Route
+                path="/"
+                element={<LogTripScreen user={activeUser} />}
+              />
+              <Route
+                path="/dashboard"
+                element={<DashboardScreen user={activeUser} />}
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProfileScreen
+                    user={activeUser}
+                    onSignOut={handleSignOut}
+                    onSignIn={handleSignIn}
+                  />
+                }
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </div>
       </div>
 
