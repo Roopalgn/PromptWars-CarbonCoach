@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, memo } from 'react';
 import { useTrips } from '../hooks/useTrips';
 import { getLatestInsight, saveInsight, deleteTrip } from '../services/firestore';
-import { ModeIcon, IconMinus } from '../components/Icons';
+import { ModeIcon, IconMinus, IconLeaf, IconBarChart2 as IconBarChart, IconPieChart, IconTrendingUp as IconTrendUp, IconClock, IconStar } from '../components/Icons';
 import KpiCard from '../components/KpiCard';
 import { generateInsight } from '../services/gemini';
 import { roundCO2, formatDate, formatDayLabel, getLast7Days, isThisWeek, formatShortAddress } from '../utils/formatters';
@@ -26,97 +26,7 @@ ChartJS.register(
   LineElement, PointElement, Filler, Title, Tooltip, Legend
 );
 
-/**
- * Leaf SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=18] - Icon size
- * @returns {JSX.Element}
- */
-function IconLeaf({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
-      <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-    </svg>
-  );
-}
 
-/**
- * Bar Chart SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=18] - Icon size
- * @returns {JSX.Element}
- */
-function IconBarChart({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-      <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
-    </svg>
-  );
-}
-
-/**
- * Pie Chart SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=18] - Icon size
- * @returns {JSX.Element}
- */
-function IconPieChart({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>
-    </svg>
-  );
-}
-
-/**
- * Trend Up SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=18] - Icon size
- * @returns {JSX.Element}
- */
-function IconTrendUp({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-      <polyline points="17 6 23 6 23 12"/>
-    </svg>
-  );
-}
-
-/**
- * Clock SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=18] - Icon size
- * @returns {JSX.Element}
- */
-function IconClock({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-    </svg>
-  );
-}
-
-/**
- * Star SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=14] - Icon size
- * @returns {JSX.Element}
- */
-function IconStar({ size = 14 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none">
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-    </svg>
-  );
-}
 
 /**
  * Gemini AI Insight Card component.
