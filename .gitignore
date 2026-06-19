@@ -26,3 +26,19 @@ npm-debug.log*
 
 # Testing
 coverage/
+
+# Firebase cache
+.firebase/
+
+# Agentic environment & configurations
+.agents/
+skills-lock.json
+
+# Local Python virtual environment
+.venv/
+venv/
+
+# Planning artifacts not needed by the judge
+plan.md
+COMPETITIVE_ANALYSIS_COMPLETE.md
+info.md

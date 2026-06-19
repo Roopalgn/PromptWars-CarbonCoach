@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { calculateCO2, getBestAlternative, getKgSaved } from './carbonCalc';
+import { calculateCO2, getBestAlternative, getKgSaved, getAllAlternatives } from './carbonCalc';
 
 test('Ola trip of 5km = 0.715 kg', () => {
   expect(calculateCO2('ola_uber', 5)).toBeCloseTo(0.715);
@@ -48,3 +48,12 @@ test('formatShortAddress combines short room/floor prefixes', () => {
   expect(formatShortAddress('2nd floor, 134, 17th Cross Road')).toBe('2nd floor, 134');
   expect(formatShortAddress('239/240, Bellary Rd, Indra Nagar')).toBe('239/240, Bellary Rd');
 });
+
+test('getAllAlternatives sorts by emissions ascending', () => {
+  const alts = getAllAlternatives('ola_uber', 10);
+  for (let i = 1; i < alts.length; i++) {
+    expect(alts[i].kg_co2).toBeGreaterThanOrEqual(alts[i - 1].kg_co2);
+  }
+  expect(alts.find((a) => a.mode === 'ola_uber')).toBeUndefined(); // excludes chosen mode
+});
+

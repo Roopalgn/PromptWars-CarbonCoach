@@ -47,10 +47,14 @@ export default function BottomNav() {
           end={to === '/'}
           className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           aria-label={label}
-          aria-current={undefined}
         >
-          <Icon size={22} />
-          <span>{label}</span>
+          {({ isActive }) => (
+            <>
+              <Icon size={22} />
+              <span>{label}</span>
+              {isActive && <span className="sr-only">(current page)</span>}
+            </>
+          )}
         </NavLink>
       ))}
     </nav>
