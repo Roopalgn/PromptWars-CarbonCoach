@@ -61,7 +61,7 @@ const InsightCard = memo(function InsightCard({ insight }) {
       )}
       {insight.encouragement && (
         <p className="insight-encouragement-txt">
-          "{insight.encouragement}"
+          &ldquo;{insight.encouragement}&rdquo;
         </p>
       )}
     </div>
@@ -402,13 +402,30 @@ export default function DashboardScreen({ user }) {
             </section>
 
             {/* AI insight */}
+            {trips.length < 5 && (
+              <div className="insight-card mb-6 insight-card--locked" style={{ opacity: 0.85, borderStyle: 'dashed' }}>
+                <div className="insight-badge" style={{ background: 'rgba(245,158,11,0.1)', color: 'var(--c-warning)' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 4 }} aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  Gemini AI — Locked
+                </div>
+                <p className="insight-headline" style={{ fontSize: '0.95rem' }}>
+                  Log at least <strong className="text-gradient-green">5 trips</strong> to unlock weekly AI-powered suggestions.
+                </p>
+                <p className="demo-insight-encouragement" style={{ margin: 0 }}>
+                  You have logged {trips.length} {trips.length === 1 ? 'trip' : 'trips'} so far. Gemini needs more data to analyze your commute patterns.
+                </p>
+              </div>
+            )}
             {insightLoading && (
               <div className="insight-loading-box">
                 <div className="spinner spinner-16" />
                 <span aria-live="polite">Generating Gemini insight…</span>
               </div>
             )}
-            {insight && !isGuest && (
+            {insight && !isGuest && trips.length >= 5 && (
               <div className="mb-6">
                 <InsightCard insight={insight} />
               </div>
@@ -423,7 +440,7 @@ export default function DashboardScreen({ user }) {
                   Your demo week shows <strong className="text-green">5.74 kg CO₂</strong> — mostly from cab rides. Switching your daily commute to Metro could cut that by 60%.
                 </p>
                 <p className="demo-insight-encouragement">
-                  "Sign in to get personalised AI insights based on your actual trips."
+                  &ldquo;Sign in to get personalised AI insights based on your actual trips.&rdquo;
                 </p>
               </div>
             )}
