@@ -15,4 +15,4 @@
 - [x] Step 2C: India Average Baseline KPI
 - [x] Step 3A: Fix Broken Firestore Delete Rule
 - [x] Step 3B: Document App Check in README
-- [ ] Step 4: Verification & Deployment
+- [x] Step 4: Verification & Deployment
