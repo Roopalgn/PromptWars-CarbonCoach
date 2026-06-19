@@ -101,7 +101,7 @@ describe('formatters', () => {
       for (let i = 1; i <= 7; i++) {
         const date = new Date(`2024-01-${15 + i}`);
         const result = formatDayLabel(date);
-        expect(result.length).toBeGreaterThan(0);
+        expect(days).toContain(result);
       }
     });
   });

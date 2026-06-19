@@ -104,7 +104,7 @@ export function resolvePlaceFromText(text, coords) {
           resolve(null);
         }
       });
-    } catch (err) {
+    } catch {
       resolve(null);
     }
   });

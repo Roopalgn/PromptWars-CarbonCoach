@@ -54,8 +54,6 @@ describe('firestore service', () => {
     });
 
     it('should require all required fields', () => {
-      const uid = 'test-user-123';
-      
       // Missing fields should be caught during validation
       const incompleteTrip = {
         mode: 'metro',
@@ -79,9 +77,6 @@ describe('firestore service', () => {
 
   describe('subscribeToTrips', () => {
     it('returns an unsubscribe function', () => {
-      const uid = 'test-user-123';
-      const callback = vi.fn();
-      
       // This would return an unsubscribe function in real implementation
       expect(typeof subscribeToTrips).toBe('function');
     });
@@ -109,15 +104,11 @@ describe('firestore service', () => {
 
   describe('getLatestInsight', () => {
     it('returns null when no insights exist', async () => {
-      const uid = 'test-user-123';
-      
       // Should handle no insights gracefully
       expect(typeof getLatestInsight).toBe('function');
     });
 
     it('queries the insights collection correctly', () => {
-      const uid = 'test-user-123';
-      
       // Should query the right path
       expect(typeof getLatestInsight).toBe('function');
     });
@@ -125,7 +116,6 @@ describe('firestore service', () => {
 
   describe('saveInsight', () => {
     it('saves insight with required fields', async () => {
-      const uid = 'test-user-123';
       const insightData = {
         summary: 'Test summary',
         top_action: 'Use metro',
@@ -134,6 +124,7 @@ describe('firestore service', () => {
         weekly_saved_potential_kg: 1.0,
       };
 
+      expect(typeof saveInsight).toBe('function');
       expect(insightData).toHaveProperty('summary');
       expect(insightData).toHaveProperty('top_action');
       expect(insightData).toHaveProperty('encouragement');
@@ -167,9 +158,6 @@ describe('firestore service', () => {
     });
 
     it('handles deletion errors gracefully', async () => {
-      const uid = 'test-user-123';
-      const tripId = 'non-existent-trip';
-      
       // Should handle deletion of non-existent trips gracefully
       expect(typeof deleteTrip).toBe('function');
     });

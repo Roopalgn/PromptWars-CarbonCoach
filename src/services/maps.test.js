@@ -38,11 +38,9 @@ describe('maps service', () => {
       fetch.mockClear();
     });
 
-    it('validates input parameters', () => {
+    it('validates input parameters', async () => {
       // Should require valid placeIds
-      expect(() => {
-        const result = getRouteDistance(null, 'dest');
-      }).toBeTruthy();
+      await expect(getRouteDistance(null, 'dest')).rejects.toThrow();
     });
 
     it('rejects null originPlaceId', async () => {
@@ -89,7 +87,7 @@ describe('maps service', () => {
         }),
       });
 
-      const result = await getRouteDistance('place1', 'place2');
+      await getRouteDistance('place1', 'place2');
       expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining('routes.googleapis.com'),
         expect.objectContaining({ method: 'POST' })

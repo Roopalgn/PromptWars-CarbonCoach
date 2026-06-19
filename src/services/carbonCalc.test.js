@@ -1,4 +1,4 @@
-import { describe, test, expect, it } from 'vitest';
+import { describe, test, expect } from 'vitest';
 import { calculateCO2, getBestAlternative, getKgSaved, getAllAlternatives } from './carbonCalc';
 import { formatShortAddress } from '../utils/formatters';
 

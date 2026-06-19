@@ -1,4 +1,4 @@
-import { test, expect, vi, describe, it } from 'vitest';
+import { expect, vi, describe, it } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ModeSelector from './ModeSelector';
 
