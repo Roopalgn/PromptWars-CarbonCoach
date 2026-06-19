@@ -1,11 +1,18 @@
-- [x] Create `src/config/constants.js`
-- [x] Extract styles and update `src/index.css`
-- [x] Refactor `src/App.jsx` (extract styles + JSDoc + GUEST_USER)
-- [x] Refactor `src/screens/DashboardScreen.jsx` (extract styles + JSDoc + constants + performance optimizations)
-- [x] Refactor `src/screens/LogTripScreen.jsx` (extract styles + JSDoc + constants)
-- [x] Refactor `src/screens/LandingScreen.jsx` (extract styles + JSDoc)
-- [x] Refactor `src/screens/ProfileScreen.jsx` (extract styles + JSDoc)
-- [x] Refactor `src/components/InsightCard.jsx` (extract styles + JSDoc)
-- [x] Refactor `src/components/TripResultCard.jsx` (extract styles + JSDoc)
-- [x] Add JSDoc comments to hooks & services (`carbonCalc.js`, `firestore.js`, `gemini.js`, `maps.js`, `formatters.js`, `useAuth.js`, `useTrips.js`)
-- [x] Verify execution (run tests and lint)
+- [x] Step 1A: Extract LoadingShell from App.jsx
+- [x] Step 1A: Extract TopBar from App.jsx
+- [x] Step 1A: Extract BottomNav from App.jsx
+- [x] Step 1A: Extract Sidebar from App.jsx
+- [x] Step 1A: Extract BgCanvas from App.jsx
+- [x] Step 1B: Extract KpiCard from DashboardScreen.jsx
+- [x] Step 1B: Import TripResultCard from existing src/components/TripResultCard.jsx in LogTripScreen.jsx
+- [x] Step 1C: Unify GuestToast and Toast into Toast.jsx
+- [x] Step 1D: Move resolvePlaceFromText to maps.js & Geocoder-only refactor
+- [x] Step 1E: Consolidate all SVG icons to Icons.jsx
+- [x] Step 1F: Complete JSDoc Comments
+- [x] Step 1G: Add ESLint Configuration and fix hook dependency warnings
+- [x] Step 2A: Gemini Insight Threshold Placeholder
+- [x] Step 2B: Trees Equivalent Metric
+- [x] Step 2C: India Average Baseline KPI
+- [x] Step 3A: Fix Broken Firestore Delete Rule
+- [ ] Step 3B: Document App Check in README
+- [ ] Step 4: Verification & Deployment
