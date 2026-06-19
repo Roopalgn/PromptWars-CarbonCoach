@@ -9,14 +9,7 @@ import path from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-test('user cannot read another user\'s trips', async () => {
-  // Check if local Firestore emulator is running
-  try {
-    await fetch('http://127.0.0.1:8080');
-  } catch {
-    console.warn('⚠️ [Firestore Rules Test] Firestore emulator is not running on port 8080. Skipping rules verification.');
-    return;
-  }
+test("user cannot read another user's trips", async () => {
 
   const rulesPath = path.resolve(__dirname, '../../firestore.rules');
   const rules = fs.readFileSync(rulesPath, 'utf8');
@@ -50,4 +43,4 @@ test('user cannot read another user\'s trips', async () => {
   await assertSucceeds(getDoc(aliceInsightRef));
 
   await testEnv.cleanup();
-});
+}, 15000);
