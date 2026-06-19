@@ -2,8 +2,14 @@ import { useState, useEffect } from 'react';
 import { subscribeToTrips } from '../services/firestore';
 
 /**
- * Real-time subscription to the current user's trips.
+ * Custom hook for real-time subscription to the current user's trips.
  * Updates automatically via Firestore onSnapshot or loads from localStorage for guests.
+ * 
+ * @param {string|null|undefined} uid - The current user's UID (or 'guest')
+ * @returns {{
+ *   trips: Array<Object>,
+ *   tripsLoading: boolean
+ * }} The list of trips and loading state
  */
 export function useTrips(uid) {
   const [trips, setTrips] = useState([]);

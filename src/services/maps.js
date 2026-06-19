@@ -28,6 +28,14 @@ export async function loadMapsApi() {
  * @throws {Error} if the API call fails or no route is found
  */
 export async function getRouteDistance(originPlaceId, destinationPlaceId) {
+  // Validate inputs
+  if (!originPlaceId || typeof originPlaceId !== 'string') {
+    throw new Error('Invalid origin place ID');
+  }
+  if (!destinationPlaceId || typeof destinationPlaceId !== 'string') {
+    throw new Error('Invalid destination place ID');
+  }
+
   const response = await fetch(
     'https://routes.googleapis.com/directions/v2:computeRoutes',
     {

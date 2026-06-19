@@ -3,10 +3,18 @@ import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 
 /**
- * Provides Google auth state and sign-in/out helpers.
- * user === undefined  → auth state still loading
- * user === null       → not authenticated
- * user === object     → authenticated Firebase User
+ * Custom hook to manage Firebase Google Authentication state.
+ * 
+ * - user === undefined  → auth state still loading
+ * - user === null       → not authenticated
+ * - user === object     → authenticated Firebase User
+ * 
+ * @returns {{
+ *   user: import('firebase/auth').User|null|undefined,
+ *   authError: string|null,
+ *   signIn: function(): Promise<void>,
+ *   signOutUser: function(): Promise<void>
+ * }} Authentication status and helper functions
  */
 export function useAuth() {
   const [user, setUser] = useState(undefined);

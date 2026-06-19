@@ -1,0 +1,11 @@
+- [x] Create `src/config/constants.js`
+- [x] Extract styles and update `src/index.css`
+- [x] Refactor `src/App.jsx` (extract styles + JSDoc + GUEST_USER)
+- [x] Refactor `src/screens/DashboardScreen.jsx` (extract styles + JSDoc + constants + performance optimizations)
+- [x] Refactor `src/screens/LogTripScreen.jsx` (extract styles + JSDoc + constants)
+- [x] Refactor `src/screens/LandingScreen.jsx` (extract styles + JSDoc)
+- [x] Refactor `src/screens/ProfileScreen.jsx` (extract styles + JSDoc)
+- [x] Refactor `src/components/InsightCard.jsx` (extract styles + JSDoc)
+- [x] Refactor `src/components/TripResultCard.jsx` (extract styles + JSDoc)
+- [x] Add JSDoc comments to hooks & services (`carbonCalc.js`, `firestore.js`, `gemini.js`, `maps.js`, `formatters.js`, `useAuth.js`, `useTrips.js`)
+- [x] Verify execution (run tests and lint)

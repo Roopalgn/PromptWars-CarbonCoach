@@ -61,10 +61,34 @@ Return exactly this JSON with no extra text:
   }
 }
 
-function parseGeminiJSON(text) {
-  const jsonStr = text
-    .replace(/^```json?\s*/im, '')
-    .replace(/```\s*$/m, '')
-    .trim();
-  return JSON.parse(jsonStr);
+/**
+ * Safely parse JSON from Gemini's response, stripping markdown code blocks if present.
+ * @param {string} text - Raw Gemini response string
+ * @returns {Object|null} Parsed and validated object, or null on error
+ */
+export function parseGeminiJSON(text) {
+  try {
+    if (!text || typeof text !== 'string') {
+      console.error('[Gemini] Invalid response text type:', typeof text);
+      return null;
+    }
+
+    const jsonStr = text
+      .replace(/^```json?\s*/im, '')
+      .replace(/```\s*$/m, '')
+      .trim();
+
+    const parsed = JSON.parse(jsonStr);
+
+    // Validate required fields
+    if (!parsed.summary || !parsed.top_action || !parsed.encouragement) {
+      console.error('[Gemini] Parsed JSON missing required fields:', parsed);
+      return null;
+    }
+
+    return parsed;
+  } catch (error) {
+    console.error('[Gemini] JSON parse failed:', error.message, 'Input:', text?.substring(0, 100));
+    return null;
+  }
 }

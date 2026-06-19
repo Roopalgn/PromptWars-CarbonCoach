@@ -33,8 +33,9 @@ export default function ModeSelector({ selected, onChange }) {
       aria-label="Select your transport mode"
       className="mode-grid"
     >
-      {MODES.map((mode) => {
+      {MODES.map((mode, idx) => {
         const isSelected = selected === mode;
+        const isTabbable = isSelected || (!selected && idx === 0);
         return (
           <button
             key={mode}
@@ -43,7 +44,7 @@ export default function ModeSelector({ selected, onChange }) {
             role="radio"
             aria-checked={isSelected}
             aria-label={MODE_LABELS[mode]}
-            tabIndex={isSelected ? 0 : -1}
+            tabIndex={isTabbable ? 0 : -1}
             className={`mode-btn${isSelected ? ' selected' : ''}`}
             onClick={() => onChange(mode)}
             onKeyDown={(e) => handleKeyDown(e, mode)}

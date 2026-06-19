@@ -1,15 +1,44 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper function to validate trip data structure
+    function isValidTrip() {
+      let data = request.resource.data;
+      return data.size() > 0
+        && 'origin' in data && data.origin is string
+        && 'destination' in data && data.destination is string
+        && 'mode' in data && data.mode is string
+        && data.mode in ['car', 'bus', 'metro', 'train', 'bike', 'walk', 'carpool']
+        && 'distance_km' in data && data.distance_km is number && data.distance_km >= 0
+        && 'kg_co2' in data && data.kg_co2 is number && data.kg_co2 >= 0
+        && 'timestamp' in data
+        && (!('origin_place_id' in data) || data.origin_place_id is string)
+        && (!('destination_place_id' in data) || data.destination_place_id is string);
+    }
+
+    // Helper function to validate insight data structure
+    function isValidInsight() {
+      let data = request.resource.data;
+      return data.size() > 0
+        && 'summary' in data && data.summary is string
+        && 'top_action' in data && data.top_action is string
+        && 'encouragement' in data && data.encouragement is string
+        && 'timestamp' in data;
+    }
+
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
       
       match /trips/{tripId} {
-        allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+        allow read, write, delete: if request.auth != null 
+          && request.auth.uid == userId
+          && isValidTrip();
       }
       
       match /insights/{insightId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read, write: if request.auth != null 
+          && request.auth.uid == userId
+          && isValidInsight();
       }
     }
   }

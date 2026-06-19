@@ -7,7 +7,26 @@ import { EMISSIONS_FACTORS, COMPARISON_MODES } from '../config/emissionsFactors'
  * @returns {number} kg CO₂ (rounded to 3 decimal places)
  */
 export function calculateCO2(mode, distanceKm) {
-  const factor = EMISSIONS_FACTORS[mode] ?? 0;
+  // Validate inputs
+  if (!mode || typeof mode !== 'string') {
+    console.warn('[carbonCalc] Invalid mode:', mode);
+    return 0;
+  }
+  if (distanceKm === null || distanceKm === undefined || typeof distanceKm !== 'number') {
+    console.warn('[carbonCalc] Invalid distance:', distanceKm);
+    return 0;
+  }
+  if (distanceKm < 0) {
+    console.warn('[carbonCalc] Negative distance not allowed:', distanceKm);
+    return 0;
+  }
+
+  const factor = EMISSIONS_FACTORS[mode];
+  if (factor === undefined) {
+    console.warn('[carbonCalc] Unknown transport mode:', mode);
+    return 0;
+  }
+
   return Math.round(factor * distanceKm * 1000) / 1000;
 }
 
@@ -35,6 +54,10 @@ export function getBestAlternative(chosenMode) {
  * @returns {number} kg saved (can be negative if alternative is worse)
  */
 export function getKgSaved(actualKg, alternativeKg) {
+  if (typeof actualKg !== 'number' || typeof alternativeKg !== 'number') {
+    console.warn('[carbonCalc] Invalid inputs to getKgSaved:', actualKg, alternativeKg);
+    return 0;
+  }
   return Math.round((actualKg - alternativeKg) * 100) / 100;
 }
 

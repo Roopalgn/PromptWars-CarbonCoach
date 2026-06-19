@@ -10,85 +10,36 @@ import {
 } from '../services/carbonCalc';
 import { MODE_LABELS, EMISSIONS_FACTORS } from '../config/emissionsFactors';
 import { roundCO2 } from '../utils/formatters';
+import {
+  IconMapPin,
+  IconFlag,
+  IconAlertCircle,
+  IconCheck,
+  IconRefresh,
+  IconSave,
+} from '../components/Icons';
 import ModeSelector from '../components/ModeSelector';
+import { MODE_BAR_CLASS } from '../config/constants';
 
-/* ── SVG Icons ─────────────────────────────────────────────── */
-function IconMapPin({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
-    </svg>
-  );
-}
-
-function IconFlag({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
-    </svg>
-  );
-}
-
-function IconAlertCircle({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-    </svg>
-  );
-}
-
-function IconCheck({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12"/>
-    </svg>
-  );
-}
-
-function IconRefresh({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
-    </svg>
-  );
-}
-
-function IconSave({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-      <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
-    </svg>
-  );
-}
-
-
-
-/* ── CO₂ level helper ──────────────────────────────────────── */
+/**
+ * Determine the emission impact level key based on kg CO2.
+ * @param {number} kg - Carbon emissions in kilograms
+ * @returns {'low'|'medium'|'high'}
+ */
 function co2Level(kg) {
   if (kg <= 0.5) return 'low';
   if (kg <= 2.0) return 'medium';
   return 'high';
 }
 
-/* ── Bar fill colour by mode ───────────────────────────────── */
-const MODE_BAR_CLASS = {
-  walk:    'alt-bar-fill--green',
-  cycle:   'alt-bar-fill--green',
-  metro:   'alt-bar-fill--cyan',
-  bus:     'alt-bar-fill--cyan',
-  carpool: 'alt-bar-fill--violet',
-  auto:    'alt-bar-fill--amber',
-  ola_uber:'alt-bar-fill--red',
-};
-
-/* ── Toast ─────────────────────────────────────────────────── */
+/**
+ * Toast alert notification component.
+ * Automatically clears itself after 3.5 seconds.
+ * @param {Object} props - Component props
+ * @param {string} props.message - Banner text to display
+ * @param {function} props.onDone - Dismiss callback
+ * @returns {JSX.Element}
+ */
 function Toast({ message, onDone }) {
   useEffect(() => {
     const t = setTimeout(onDone, 3500);
@@ -104,7 +55,26 @@ function Toast({ message, onDone }) {
   );
 }
 
-/* ── Result card ───────────────────────────────────────────── */
+/**
+ * Trip Result Card displaying calculated carbon emission values,
+ * alternative mode comparisons, and logs/saves controls.
+ * @param {Object} props - Component props
+ * @param {Object} props.result - Calculated route emission results
+ * @param {string} props.result.mode - Chosen mode key
+ * @param {string} props.result.origin - Starting address
+ * @param {string} props.result.destination - Ending address
+ * @param {number} props.result.distance_km - Travel distance in km
+ * @param {number} props.result.kg_co2 - Carbon footprint of chosen mode
+ * @param {string} props.result.best_alternative_mode - Best alternative mode key
+ * @param {number} props.result.best_alternative_kg - Carbon footprint of best alternative mode
+ * @param {number} props.result.kg_saved_if_alt - Potential savings in kg CO2
+ * @param {Array<Object>} props.result.alternatives - List of calculated alternative route options
+ * @param {function} props.onLog - Trip log save trigger handler
+ * @param {function} props.onReset - Reset form fields and state callback
+ * @param {boolean} props.saving - In-flight log operations indicator
+ * @param {boolean} props.isGuest - Flag indicating active guest mode
+ * @returns {JSX.Element}
+ */
 function TripResultCard({ result, onLog, onReset, saving, isGuest }) {
   const level = co2Level(result.kg_co2);
   const maxKg = Math.max(...result.alternatives.map((a) => a.kg_co2), result.kg_co2, 0.01);
@@ -115,22 +85,20 @@ function TripResultCard({ result, onLog, onReset, saving, isGuest }) {
     <div className="result-card">
       {/* CO₂ big display */}
       <div className="co2-display">
-        <div className="label-tag label-tag--cyan" style={{ margin: '0 auto var(--s-4)', width: 'fit-content' }}>
+        <div className="label-tag label-tag--cyan result-label-tag">
           Your trip — {result.distance_km} km · {MODE_LABELS[result.mode]}
         </div>
-        <div className="co2-value" style={{
-          color: level === 'low' ? 'var(--c-primary)' : level === 'medium' ? 'var(--c-warning)' : 'var(--c-danger)',
-          textShadow: level === 'low'
-            ? '0 0 40px var(--c-primary-glow)'
-            : level === 'medium'
-            ? '0 0 40px rgba(245,158,11,0.3)'
-            : '0 0 40px rgba(239,68,68,0.3)',
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(3rem, 10vw, 5.5rem)',
-          fontWeight: 'var(--w-bold)',
-          lineHeight: 1,
-          letterSpacing: '-0.03em',
-        }}>
+        <div
+          className="co2-value result-co2-display"
+          style={{
+            '--co2-color': level === 'low' ? 'var(--c-primary)' : level === 'medium' ? 'var(--c-warning)' : 'var(--c-danger)',
+            '--co2-shadow': level === 'low'
+              ? '0 0 40px var(--c-primary-glow)'
+              : level === 'medium'
+              ? '0 0 40px rgba(245,158,11,0.3)'
+              : '0 0 40px rgba(239,68,68,0.3)',
+          }}
+        >
           {roundCO2(result.kg_co2)}
           <span className="co2-unit">kg CO₂</span>
         </div>
@@ -142,7 +110,7 @@ function TripResultCard({ result, onLog, onReset, saving, isGuest }) {
       </div>
 
       {/* Your chosen mode vs reference bar */}
-      <div style={{ marginBottom: 'var(--s-4)' }}>
+      <div className="mb-4">
         <div className="alt-bar-row">
           <span className="alt-bar-label">{MODE_LABELS[result.mode]}</span>
           <div className="alt-bar-track">
@@ -161,8 +129,8 @@ function TripResultCard({ result, onLog, onReset, saving, isGuest }) {
       </div>
 
       {/* Comparison bars */}
-      <div className="section-header" style={{ marginBottom: 'var(--s-3)' }}>
-        <span className="chart-title" style={{ marginBottom: 0 }}>
+      <div className="section-header mb-3">
+        <span className="chart-title mb-0">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
             <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
@@ -192,18 +160,17 @@ function TripResultCard({ result, onLog, onReset, saving, isGuest }) {
       </div>
 
       {/* Save / Reset */}
-      <div style={{ display: 'flex', gap: 'var(--s-3)', marginTop: 'var(--s-6)' }}>
+      <div className="log-trip-actions-row">
         <button
           id="log-trip-btn"
           type="button"
-          className="btn btn--primary"
-          style={{ flex: 1 }}
+          className="btn btn--primary flex-1"
           onClick={onLog}
           disabled={saving}
           aria-label={isGuest ? 'Log trip locally (guest mode)' : 'Save trip to your account'}
         >
           {saving ? (
-            <><div className="spinner" style={{ width: 16, height: 16 }} />Saving…</>
+            <><div className="spinner spinner-16" />Saving…</>
           ) : (
             <><IconSave size={16} />{isGuest ? 'Log (guest)' : 'Save trip'}</>
           )}
@@ -221,7 +188,7 @@ function TripResultCard({ result, onLog, onReset, saving, isGuest }) {
       </div>
 
       {isGuest && (
-        <p style={{ marginTop: 'var(--s-3)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textAlign: 'center' }}>
+        <p className="mt-3 text-xs text-muted text-center">
           Guest mode — trip stored in-session only. Sign in to persist your data.
         </p>
       )}
@@ -490,14 +457,28 @@ export default function LogTripScreen({ user }) {
         // Guest mode: save to local storage
         await new Promise((r) => setTimeout(r, 400));
         const stored = localStorage.getItem('carboncoach_guest_trips');
-        const guestTrips = stored ? JSON.parse(stored) : [];
+        let guestTrips = [];
+        try {
+          guestTrips = stored ? JSON.parse(stored) : [];
+        } catch (parseErr) {
+          console.warn('[LogTripScreen] Failed to parse guest trips from localStorage:', parseErr);
+          guestTrips = [];
+        }
+        
         const newTrip = {
           ...result,
           id: `guest_${Date.now()}`,
           timestamp: new Date().toISOString()
         };
         guestTrips.unshift(newTrip);
-        localStorage.setItem('carboncoach_guest_trips', JSON.stringify(guestTrips));
+        try {
+          localStorage.setItem('carboncoach_guest_trips', JSON.stringify(guestTrips));
+        } catch (storageErr) {
+          console.error('[LogTripScreen] Failed to save trip to localStorage:', storageErr);
+          setCalcError('Unable to save to device storage — try clearing some space.');
+          setSaving(false);
+          return;
+        }
         
         setToast('Trip logged locally (sign in to save)');
         navigate('/dashboard');
@@ -506,8 +487,9 @@ export default function LogTripScreen({ user }) {
         setToast('Trip saved!');
         navigate('/dashboard');
       }
-    } catch {
-      setCalcError('Failed to save trip — please try again.');
+    } catch (err) {
+      console.error('[LogTripScreen] Error saving trip:', err);
+      setCalcError(err.message || 'Failed to save trip — please try again.');
       setSaving(false);
     }
   }
@@ -535,15 +517,16 @@ export default function LogTripScreen({ user }) {
                 From
               </label>
               <div className="input-wrap">
-                <span className="input-icon"><IconMapPin size={18} /></span>
+                <span className="input-icon" aria-hidden="true"><IconMapPin size={18} /></span>
                 <input
                   id="origin-input"
                   ref={originInputRef}
                   type="text"
                   className="form-input"
-                  placeholder="Starting point"
+                  placeholder="Starting point (e.g., New Delhi Station)"
+                  aria-label="Trip origin"
                   aria-required="true"
-                  aria-describedby={calcError && !originPlaceId ? 'form-error' : undefined}
+                  aria-describedby={calcError && !originPlaceId ? 'form-error' : 'origin-help'}
                   onChange={(e) => {
                     setOriginAddress(e.target.value);
                     if (!e.target.value) setOriginPlaceId('');
@@ -551,6 +534,7 @@ export default function LogTripScreen({ user }) {
                   onKeyDown={handleKeyDown}
                   autoComplete="off"
                 />
+                <span id="origin-help" style={{ display: 'none' }}>Select from autocomplete suggestions</span>
               </div>
             </div>
 
@@ -560,15 +544,16 @@ export default function LogTripScreen({ user }) {
                 To
               </label>
               <div className="input-wrap">
-                <span className="input-icon"><IconFlag size={18} /></span>
+                <span className="input-icon" aria-hidden="true"><IconFlag size={18} /></span>
                 <input
                   id="destination-input"
                   ref={destinationInputRef}
                   type="text"
                   className="form-input"
-                  placeholder="Destination"
+                  placeholder="Destination (e.g., Connaught Place)"
+                  aria-label="Trip destination"
                   aria-required="true"
-                  aria-describedby={calcError && !destPlaceId ? 'form-error' : undefined}
+                  aria-describedby={calcError && !destPlaceId ? 'form-error' : 'destination-help'}
                   onChange={(e) => {
                     setDestAddress(e.target.value);
                     if (!e.target.value) setDestPlaceId('');
@@ -576,6 +561,7 @@ export default function LogTripScreen({ user }) {
                   onKeyDown={handleKeyDown}
                   autoComplete="off"
                 />
+                <span id="destination-help" style={{ display: 'none' }}>Select from autocomplete suggestions</span>
               </div>
             </div>
 
@@ -617,7 +603,7 @@ export default function LogTripScreen({ user }) {
         )}
 
         {calcState === 'result' && result && (
-          <div style={{ position: 'relative' }}>
+          <div className="pos-relative">
             <TripResultCard
               result={result}
               onLog={handleLog}

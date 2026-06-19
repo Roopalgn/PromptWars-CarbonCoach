@@ -2,7 +2,12 @@ import { useTrips } from '../hooks/useTrips';
 import { roundCO2 } from '../utils/formatters';
 import { INDIA_DAILY_AVERAGE_KG } from '../config/emissionsFactors';
 
-/* ── SVG Icons ─────────────────────────────────────────────── */
+/**
+ * User SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=32] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconUser({ size = 32 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -13,6 +18,12 @@ function IconUser({ size = 32 }) {
   );
 }
 
+/**
+ * Leaf SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=20] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconLeaf({ size = 20 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -23,6 +34,12 @@ function IconLeaf({ size = 20 }) {
   );
 }
 
+/**
+ * Trending Down SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=20] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconTrendingDown({ size = 20 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -33,6 +50,12 @@ function IconTrendingDown({ size = 20 }) {
   );
 }
 
+/**
+ * Log Out SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=18] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconLogOut({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -44,6 +67,12 @@ function IconLogOut({ size = 18 }) {
   );
 }
 
+/**
+ * Shield SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=20] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconShield({ size = 20 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -53,6 +82,12 @@ function IconShield({ size = 20 }) {
   );
 }
 
+/**
+ * Google SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=18] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconGoogle({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
@@ -64,10 +99,15 @@ function IconGoogle({ size = 18 }) {
   );
 }
 
-/* ── Guest profile placeholder ─────────────────────────────── */
+/**
+ * Guest Profile promo component explaining benefits of authenticated mode.
+ * @param {Object} props - Component props
+ * @param {function} props.onSignIn - google sign in handler
+ * @returns {JSX.Element}
+ */
 function GuestProfile({ onSignIn }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-6)' }}>
+    <div className="flex-col-gap6">
       <div className="profile-hero">
         <div className="profile-avatar-placeholder">
           <IconUser size={32} />
@@ -78,39 +118,23 @@ function GuestProfile({ onSignIn }) {
         </div>
       </div>
 
-      <div
-        style={{
-          background: 'linear-gradient(135deg, rgba(16,185,129,0.06), rgba(6,182,212,0.04))',
-          border: '1px solid rgba(16,185,129,0.2)',
-          borderRadius: 'var(--r-2xl)',
-          padding: 'var(--s-8)',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{
-          width: 64, height: 64, borderRadius: 'var(--r-xl)',
-          background: 'rgba(16,185,129,0.12)',
-          border: '1px solid rgba(16,185,129,0.25)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto var(--s-5)',
-          color: 'var(--c-primary)',
-        }}>
+      <div className="profile-guest-promo">
+        <div className="profile-guest-icon-box">
           <IconShield size={28} />
         </div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', fontWeight: 'var(--w-bold)', color: 'var(--text-primary)', marginBottom: 'var(--s-3)' }}>
+        <h2 className="profile-guest-heading">
           Sign in to save your data
         </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', lineHeight: 1.7, maxWidth: 340, margin: '0 auto var(--s-6)' }}>
+        <p className="profile-guest-desc">
           Your trips and carbon data will be securely stored in your private Firebase account.
           No data is shared with anyone.
         </p>
         <button
           id="profile-sign-in-btn"
           type="button"
-          className="btn btn--google"
+          className="btn btn--google margin-auto"
           onClick={onSignIn}
           aria-label="Sign in with Google"
-          style={{ margin: '0 auto' }}
         >
           <IconGoogle size={18} />
           Continue with Google
@@ -121,6 +145,19 @@ function GuestProfile({ onSignIn }) {
 }
 
 /* ── Real user profile ─────────────────────────────────────── */
+/**
+ * ProfileScreen component showing user details, lifetime stats, and comparisons.
+ * @param {Object} props - Component props
+ * @param {Object} props.user - Current user object
+ * @param {string} [props.user.uid] - User ID
+ * @param {string} [props.user.displayName] - User's display name
+ * @param {string} [props.user.email] - User's email
+ * @param {string} [props.user.photoURL] - User's photo URL
+ * @param {boolean} [props.user.isGuest] - Whether the user is a guest
+ * @param {function} props.onSignOut - Sign out handler function
+ * @param {function} props.onSignIn - Sign in handler function for Google auth
+ * @returns {JSX.Element}
+ */
 export default function ProfileScreen({ user, onSignOut, onSignIn }) {
   const isGuest = user?.isGuest;
 
@@ -191,7 +228,7 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
         </section>
 
         {/* Stats */}
-        <section aria-label="Lifetime statistics" style={{ marginBottom: 'var(--s-6)' }}>
+        <section aria-label="Lifetime statistics" className="mb-6">
           <div className="section-header">
             <h2 className="section-title">
               <IconLeaf size={16} />
@@ -200,11 +237,11 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
           </div>
 
           {tripsLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--s-8)' }}>
-              <div className="spinner" style={{ width: 24, height: 24 }} />
+            <div className="flex-center-p8">
+              <div className="spinner spinner--md" />
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--s-4)' }}>
+            <div className="grid-cols-2-gap4">
               {/* Trips card */}
               <div className="glass-card kpi-card kpi-card--cyan">
                 <div className="kpi-icon kpi-icon--cyan" aria-hidden="true">
@@ -229,7 +266,7 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
               </div>
 
               {/* Could have saved — full width */}
-              <div className="glass-card kpi-card kpi-card--green" style={{ gridColumn: 'span 2' }}>
+              <div className="glass-card kpi-card kpi-card--green grid-span-2">
                 <div className="kpi-icon kpi-icon--green" aria-hidden="true">
                   <IconTrendingDown size={20} />
                 </div>
@@ -246,11 +283,10 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
         {/* India comparison */}
         {!tripsLoading && totalTrips > 0 && (
           <section
-            className="glass-card"
+            className="glass-card mb-6"
             aria-label="Comparison with India urban average"
-            style={{ marginBottom: 'var(--s-6)' }}
           >
-            <div className="section-header" style={{ marginBottom: 'var(--s-4)' }}>
+            <div className="section-header mb-4">
               <h2 className="section-title">
                 <IconTrendingDown size={16} />
                 vs India Average
@@ -260,7 +296,7 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
               )}
             </div>
 
-            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginBottom: 'var(--s-5)' }}>
+            <p className="compare-intro-text">
               Daily transport CO₂ — you vs urban India average (CPCB 2023)
             </p>
 
@@ -294,7 +330,7 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
             <div className="compare-bar-row">
               <div className="compare-bar-meta">
                 <span className="compare-bar-name">India avg</span>
-                <span className="compare-bar-val" style={{ color: 'var(--text-secondary)' }}>
+                <span className="compare-bar-val text-secondary">
                   {INDIA_DAILY_AVERAGE_KG} kg/day
                 </span>
               </div>
@@ -313,7 +349,7 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
               </div>
             </div>
 
-            <p style={{ marginTop: 'var(--s-4)', fontSize: 'var(--text-sm)', color: isBelow ? 'var(--c-primary)' : 'var(--text-secondary)' }}>
+            <p className="compare-feedback-text" style={{ color: isBelow ? 'var(--c-primary)' : 'var(--text-secondary)' }}>
               {isBelow
                 ? 'You\'re below the India urban average — great work!'
                 : 'You\'re above the India average. Try switching to metro or bus.'}
@@ -322,7 +358,7 @@ export default function ProfileScreen({ user, onSignOut, onSignIn }) {
         )}
 
         {/* Sign out */}
-        <div style={{ paddingBottom: 'var(--s-4)' }}>
+        <div className="pb-4">
           <button
             id="sign-out-btn"
             type="button"

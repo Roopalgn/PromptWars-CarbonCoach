@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { useTrips } from '../hooks/useTrips';
 import { getLatestInsight, saveInsight, deleteTrip } from '../services/firestore';
 import { ModeIcon, IconMinus } from '../components/Icons';
@@ -11,35 +11,26 @@ import {
   LineElement, PointElement, Filler, Title, Tooltip, Legend,
 } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
+import {
+  SEED_TRIPS,
+  MODE_COLORS,
+  CHART_FONT,
+  CHART_MONO,
+  GRID_COLOR,
+  TICK_COLOR,
+} from '../config/constants';
 
 ChartJS.register(
   CategoryScale, LinearScale, BarElement, ArcElement,
   LineElement, PointElement, Filler, Title, Tooltip, Legend
 );
 
-/* ── Mode colors — dark glassmorphism palette ─────────────── */
-const MODE_COLORS = {
-  ola_uber: '#ef4444',
-  auto:     '#f59e0b',
-  bus:      '#06b6d4',
-  metro:    '#10b981',
-  carpool:  '#a78bfa',
-  cycle:    '#34d399',
-  walk:     '#22d3ee',
-};
-
-/* ── Demo/seed trips for guest mode ───────────────────────── */
-const SEED_TRIPS = [
-  { id: 's1', mode: 'ola_uber', origin: 'Connaught Place', destination: 'Gurugram', distance_km: 28, kg_co2: 4.00, kg_saved_if_alt: 2.9, timestamp: { toDate: () => new Date(Date.now() - 86400000 * 0) } },
-  { id: 's2', mode: 'metro',   origin: 'Hauz Khas',        destination: 'Rajiv Chowk', distance_km: 9, kg_co2: 0.28, kg_saved_if_alt: 0, timestamp: { toDate: () => new Date(Date.now() - 86400000 * 1) } },
-  { id: 's3', mode: 'bus',     origin: 'Sarojini Nagar',   destination: 'Nehru Place',  distance_km: 7, kg_co2: 0.28, kg_saved_if_alt: 0, timestamp: { toDate: () => new Date(Date.now() - 86400000 * 2) } },
-  { id: 's4', mode: 'auto',    origin: 'Lajpat Nagar',     destination: 'Saket',        distance_km: 5, kg_co2: 0.47, kg_saved_if_alt: 0.31, timestamp: { toDate: () => new Date(Date.now() - 86400000 * 2) } },
-  { id: 's5', mode: 'cycle',   origin: 'Dwarka Sector 10', destination: 'Dwarka Sec 14',distance_km: 3, kg_co2: 0,   kg_saved_if_alt: 0, timestamp: { toDate: () => new Date(Date.now() - 86400000 * 3) } },
-  { id: 's6', mode: 'ola_uber', origin: 'Vasant Vihar',   destination: 'Aerocity',      distance_km: 15, kg_co2: 2.15, kg_saved_if_alt: 1.7, timestamp: { toDate: () => new Date(Date.now() - 86400000 * 4) } },
-  { id: 's7', mode: 'metro',   origin: 'Janakpuri',        destination: 'Barakhamba',    distance_km: 18, kg_co2: 0.56, kg_saved_if_alt: 0, timestamp: { toDate: () => new Date(Date.now() - 86400000 * 5) } },
-];
-
-/* ── SVG Icons ─────────────────────────────────────────────── */
+/**
+ * Leaf SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=18] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconLeaf({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -50,6 +41,12 @@ function IconLeaf({ size = 18 }) {
   );
 }
 
+/**
+ * Bar Chart SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=18] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconBarChart({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -60,6 +57,12 @@ function IconBarChart({ size = 18 }) {
   );
 }
 
+/**
+ * Pie Chart SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=18] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconPieChart({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -69,6 +72,12 @@ function IconPieChart({ size = 18 }) {
   );
 }
 
+/**
+ * Trend Up SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=18] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconTrendUp({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -79,6 +88,12 @@ function IconTrendUp({ size = 18 }) {
   );
 }
 
+/**
+ * Clock SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=18] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconClock({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -88,6 +103,12 @@ function IconClock({ size = 18 }) {
   );
 }
 
+/**
+ * Star SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=14] - Icon size
+ * @returns {JSX.Element}
+ */
 function IconStar({ size = 14 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none">
@@ -96,16 +117,16 @@ function IconStar({ size = 14 }) {
   );
 }
 
-/* ── Shared chart style tokens ─────────────────────────────── */
-const CHART_FONT = "'Fira Sans', system-ui, sans-serif";
-const CHART_MONO = "'Fira Code', monospace";
-const GRID_COLOR  = 'rgba(255,255,255,0.05)';
-const TICK_COLOR  = '#475569';
-
-
-
-/* ── Insight card ──────────────────────────────────────────── */
-function InsightCard({ insight }) {
+/**
+ * Gemini AI Insight Card component.
+ * Uses React.memo to prevent unneeded redraws when props are unchanged.
+ * @param {Object} props - Component props
+ * @param {Object} props.insight - AI generated insight details
+ * @param {string} props.insight.summary - AI overall commuter behavior summary
+ * @param {string} props.insight.top_action - Recommended immediate next steps
+ * @param {string} props.insight.encouragement - Affirmative callout for week's best choice
+ */
+const InsightCard = memo(function InsightCard({ insight }) {
   return (
     <div className="insight-card" role="region" aria-label="AI-generated weekly insight">
       <div className="insight-badge">
@@ -113,37 +134,41 @@ function InsightCard({ insight }) {
         Gemini AI Insight
       </div>
       {insight.summary && (
-        <p style={{ color: 'var(--text-primary)', lineHeight: 1.7, marginBottom: 'var(--s-3)', fontSize: 'var(--text-base)' }}>
+        <p className="insight-headline">
           {insight.summary}
         </p>
       )}
       {insight.top_action && (
-        <div style={{
-          background: 'rgba(16,185,129,0.08)',
-          border: '1px solid rgba(16,185,129,0.2)',
-          borderRadius: 'var(--r-lg)',
-          padding: 'var(--s-3) var(--s-4)',
-          marginBottom: 'var(--s-3)',
-        }}>
-          <span style={{ fontSize: 'var(--text-xs)', fontWeight: 'var(--w-semi)', color: 'var(--c-primary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <div className="insight-action-container">
+          <span className="insight-action-tag">
             Top action
           </span>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', marginTop: 'var(--s-1)' }}>
+          <p className="insight-action-desc">
             {insight.top_action}
           </p>
         </div>
       )}
       {insight.encouragement && (
-        <p style={{ color: 'var(--c-accent)', fontStyle: 'italic', fontSize: 'var(--text-sm)' }}>
+        <p className="insight-encouragement-txt">
           "{insight.encouragement}"
         </p>
       )}
     </div>
   );
-}
+});
 
-/* ── KPI card ──────────────────────────────────────────────── */
-function KpiCard({ icon, value, unit, label, colorClass, iconClass }) {
+/**
+ * Key Performance Indicator Card component.
+ * Uses React.memo to prevent redraws when values are unchanged.
+ * @param {Object} props - Component props
+ * @param {JSX.Element} props.icon - Icon element
+ * @param {string|number} props.value - Numeric statistic value
+ * @param {string} [props.unit] - Units of the value
+ * @param {string} props.label - Explanatory stat label
+ * @param {string} props.colorClass - CSS modifier class for card coloring
+ * @param {string} props.iconClass - CSS modifier class for icon coloring
+ */
+const KpiCard = memo(function KpiCard({ icon, value, unit, label, colorClass, iconClass }) {
   return (
     <div className={`kpi-card kpi-card--${colorClass}`}>
       <div className={`kpi-icon kpi-icon--${iconClass}`} aria-hidden="true">
@@ -156,9 +181,17 @@ function KpiCard({ icon, value, unit, label, colorClass, iconClass }) {
       <div className="kpi-label">{label}</div>
     </div>
   );
-}
+});
 
-/* ── Main dashboard ────────────────────────────────────────── */
+/**
+ * Main Dashboard Screen displaying trip statistics, AI insights, and emissions charts.
+ * @param {Object} props - Component props
+ * @param {Object} props.user - Active user details
+ * @param {string} props.user.uid - User identifier
+ * @param {string} [props.user.displayName] - User name
+ * @param {boolean} [props.user.isGuest] - Flag for guest mode status
+ * @returns {JSX.Element}
+ */
 export default function DashboardScreen({ user }) {
   const isGuest = user?.isGuest;
 
@@ -175,6 +208,10 @@ export default function DashboardScreen({ user }) {
   const trips = rawTrips.filter((t) => !deletedSeedIds.includes(t.id));
   const loading = tripsLoading;
 
+  /**
+   * Remove a trip either from Firestore (if registered) or from local lists (if guest).
+   * @param {string} tripId - ID of trip to delete
+   */
   const handleDeleteTrip = async (tripId) => {
     try {
       if (isGuest) {
@@ -200,17 +237,21 @@ export default function DashboardScreen({ user }) {
   const [insight, setInsight]         = useState(null);
   const [insightLoading, setIL]       = useState(false);
 
-  // Week-scoped trips
-  const weekTrips         = trips.filter((t) => t.timestamp && isThisWeek(t.timestamp));
-  const weekTotalKg       = weekTrips.reduce((s, t) => s + (t.kg_co2 ?? 0), 0);
-  const weekTripCount     = weekTrips.length;
-  const weekSavedPotential = weekTrips.reduce((s, t) => {
+  // Week-scoped trips calculations
+  const weekTrips = useMemo(() => trips.filter((t) => t.timestamp && isThisWeek(t.timestamp)), [trips]);
+  
+  const weekTotalKg = useMemo(() => weekTrips.reduce((s, t) => s + (t.kg_co2 ?? 0), 0), [weekTrips]);
+  
+  const weekTripCount = weekTrips.length;
+  
+  const weekSavedPotential = useMemo(() => weekTrips.reduce((s, t) => {
     const sv = t.kg_saved_if_alt ?? 0;
     return s + (sv > 0 ? sv : 0);
-  }, 0);
+  }, 0), [weekTrips]);
+  
   const avgKgPerTrip = weekTripCount > 0 ? weekTotalKg / weekTripCount : 0;
 
-  // AI insight
+  // AI insight generation hook
   useEffect(() => {
     if (isGuest || !user?.uid || trips.length < 5) return;
     async function load() {
@@ -237,24 +278,29 @@ export default function DashboardScreen({ user }) {
       } catch { /* silent */ } finally { setIL(false); }
     }
     load();
-  }, [trips.length, user?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
+    // Using trips.length instead of trips array to avoid infinite loops when trips reference changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trips.length, user?.uid]);
 
-  // ── Bar chart: daily CO₂ last 7 days ──
-  const last7Days = getLast7Days();
-  const dailyData = last7Days.map((day) => {
-    const dayTrips = trips.filter((t) => {
-      if (!t.timestamp) return false;
-      const d = t.timestamp.toDate ? t.timestamp.toDate() : new Date(t.timestamp);
-      return (
-        d.getFullYear() === day.getFullYear() &&
-        d.getMonth()    === day.getMonth() &&
-        d.getDate()     === day.getDate()
-      );
+  // ── Bar chart: daily CO₂ last 7 days calculations ──
+  const last7Days = useMemo(() => getLast7Days(), []);
+  
+  const dailyData = useMemo(() => {
+    return last7Days.map((day) => {
+      const dayTrips = trips.filter((t) => {
+        if (!t.timestamp) return false;
+        const d = t.timestamp.toDate ? t.timestamp.toDate() : new Date(t.timestamp);
+        return (
+          d.getFullYear() === day.getFullYear() &&
+          d.getMonth()    === day.getMonth() &&
+          d.getDate()     === day.getDate()
+        );
+      });
+      return roundCO2(dayTrips.reduce((s, t) => s + (t.kg_co2 ?? 0), 0));
     });
-    return roundCO2(dayTrips.reduce((s, t) => s + (t.kg_co2 ?? 0), 0));
-  });
+  }, [trips, last7Days]);
 
-  const barData = {
+  const barData = useMemo(() => ({
     labels: last7Days.map(formatDayLabel),
     datasets: [{
       label: 'kg CO₂',
@@ -269,9 +315,9 @@ export default function DashboardScreen({ user }) {
       ),
       borderWidth: 1,
     }],
-  };
+  }), [dailyData, last7Days]);
 
-  const barOptions = {
+  const barOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -299,31 +345,33 @@ export default function DashboardScreen({ user }) {
         border: { color: 'transparent' },
       },
     },
-  };
+  }), []);
 
-  // ── Line chart: cumulative CO₂ trend ──
-  const cumulative = [];
-  let running = 0;
-  [...dailyData].reverse().forEach((v) => { running += v; cumulative.push(roundCO2(running)); });
-  cumulative.reverse();
+  // ── Line chart: cumulative CO₂ trend calculations ──
+  const lineData = useMemo(() => {
+    const cumulative = [];
+    let running = 0;
+    [...dailyData].reverse().forEach((v) => { running += v; cumulative.push(roundCO2(running)); });
+    cumulative.reverse();
 
-  const lineData = {
-    labels: last7Days.map(formatDayLabel),
-    datasets: [{
-      label: 'Cumulative kg CO₂',
-      data: cumulative,
-      borderColor: '#06b6d4',
-      backgroundColor: 'rgba(6,182,212,0.08)',
-      fill: true,
-      tension: 0.4,
-      pointBackgroundColor: '#06b6d4',
-      pointBorderColor: '#0a0f1e',
-      pointRadius: 4,
-      pointHoverRadius: 6,
-    }],
-  };
+    return {
+      labels: last7Days.map(formatDayLabel),
+      datasets: [{
+        label: 'Cumulative kg CO₂',
+        data: cumulative,
+        borderColor: '#06b6d4',
+        backgroundColor: 'rgba(6,182,212,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#06b6d4',
+        pointBorderColor: '#0a0f1e',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      }],
+    };
+  }, [dailyData, last7Days]);
 
-  const lineOptions = {
+  const lineOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -351,24 +399,35 @@ export default function DashboardScreen({ user }) {
         border: { color: 'transparent' },
       },
     },
-  };
+  }), []);
 
-  // ── Donut: mode breakdown ──
-  const modeCounts = {};
-  trips.slice(0, 50).forEach((t) => { modeCounts[t.mode] = (modeCounts[t.mode] ?? 0) + 1; });
-  const donutLabels = Object.keys(modeCounts);
-  const donutData = {
-    labels: donutLabels.map((m) => MODE_LABELS[m] ?? m),
-    datasets: [{
+  // ── Donut: mode breakdown calculations ──
+  const donutData = useMemo(() => {
+    const modeCounts = {};
+    trips.slice(0, 50).forEach((t) => { modeCounts[t.mode] = (modeCounts[t.mode] ?? 0) + 1; });
+    const donutLabels = Object.keys(modeCounts);
+    return {
+      labels: donutLabels,
       data: donutLabels.map((m) => modeCounts[m]),
-      backgroundColor: donutLabels.map((m) => MODE_COLORS[m] ?? '#64748b'),
-      borderWidth: 2,
-      borderColor: 'rgba(10,15,30,0.8)',
-      hoverBorderColor: 'rgba(255,255,255,0.2)',
-    }],
-  };
+      rawLabels: donutLabels,
+    };
+  }, [trips]);
 
-  const donutOptions = {
+  const donutChartData = useMemo(() => {
+    if (!donutData.labels.length) return null;
+    return {
+      labels: donutData.labels.map((m) => MODE_LABELS[m] ?? m),
+      datasets: [{
+        data: donutData.data,
+        backgroundColor: donutData.rawLabels.map((m) => MODE_COLORS[m] ?? '#64748b'),
+        borderWidth: 2,
+        borderColor: 'rgba(10,15,30,0.8)',
+        hoverBorderColor: 'rgba(255,255,255,0.2)',
+      }],
+    };
+  }, [donutData]);
+
+  const donutOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
     cutout: '68%',
@@ -394,7 +453,7 @@ export default function DashboardScreen({ user }) {
         callbacks: { label: (ctx) => `  ${ctx.label}: ${ctx.parsed} trips` },
       },
     },
-  };
+  }), []);
 
   return (
     <>
@@ -402,7 +461,7 @@ export default function DashboardScreen({ user }) {
       <main id="dashboard-content" className="screen" aria-label="Your carbon dashboard">
 
         <header className="page-header">
-          <div className="flex items-center gap-3" style={{ marginBottom: 'var(--s-1)' }}>
+          <div className="flex items-center gap-3 mb-1">
             {isGuest && <span className="label-tag label-tag--cyan">Demo data</span>}
           </div>
           <h1 className="page-title">
@@ -414,13 +473,13 @@ export default function DashboardScreen({ user }) {
         </header>
 
         {loading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--s-16)' }}>
-            <div className="spinner" style={{ width: 32, height: 32 }} aria-label="Loading trips" />
+          <div className="flex-center-p16">
+            <div className="spinner spinner-32" aria-label="Loading trips" />
           </div>
         ) : (
           <>
             {/* KPI row */}
-            <section aria-label="Weekly summary statistics" style={{ marginBottom: 'var(--s-6)' }}>
+            <section aria-label="Weekly summary statistics" className="mb-6">
               <div className="kpi-grid">
                 <KpiCard
                   icon={<IconLeaf size={20} />}
@@ -459,26 +518,26 @@ export default function DashboardScreen({ user }) {
 
             {/* AI insight */}
             {insightLoading && (
-              <div style={{ display: 'flex', gap: 'var(--s-2)', alignItems: 'center', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', marginBottom: 'var(--s-5)' }}>
-                <div className="spinner" style={{ width: 16, height: 16 }} />
+              <div className="insight-loading-box">
+                <div className="spinner spinner-16" />
                 <span aria-live="polite">Generating Gemini insight…</span>
               </div>
             )}
             {insight && !isGuest && (
-              <div style={{ marginBottom: 'var(--s-6)' }}>
+              <div className="mb-6">
                 <InsightCard insight={insight} />
               </div>
             )}
             {isGuest && trips.length >= 5 && (
-              <div className="insight-card" style={{ marginBottom: 'var(--s-6)' }}>
+              <div className="insight-card mb-6">
                 <div className="insight-badge">
                   <IconStar size={12} />
                   Gemini AI — Demo
                 </div>
-                <p style={{ color: 'var(--text-primary)', lineHeight: 1.7 }}>
-                  Your demo week shows <strong style={{ color: 'var(--c-primary)' }}>5.74 kg CO₂</strong> — mostly from cab rides. Switching your daily commute to Metro could cut that by 60%.
+                <p className="insight-headline">
+                  Your demo week shows <strong className="text-green">5.74 kg CO₂</strong> — mostly from cab rides. Switching your daily commute to Metro could cut that by 60%.
                 </p>
-                <p style={{ marginTop: 'var(--s-3)', color: 'var(--c-accent)', fontStyle: 'italic', fontSize: 'var(--text-sm)' }}>
+                <p className="demo-insight-encouragement">
                   "Sign in to get personalised AI insights based on your actual trips."
                 </p>
               </div>
@@ -495,12 +554,12 @@ export default function DashboardScreen({ user }) {
                 {trips.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-icon"><IconBarChart size={32} /></div>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+                    <p className="text-secondary text-sm">
                       Log your first trip to see your daily chart
                     </p>
                   </div>
                 ) : (
-                  <div style={{ height: 200 }} aria-label="Bar chart of daily CO₂ emissions">
+                  <div className="chart-h-200" aria-label="Bar chart of daily CO₂ emissions">
                     <Bar data={barData} options={barOptions} />
                   </div>
                 )}
@@ -512,27 +571,27 @@ export default function DashboardScreen({ user }) {
                   <IconTrendUp size={14} />
                   Cumulative Trend
                 </h2>
-                <div style={{ height: 180 }} aria-label="Line chart showing cumulative CO₂ this week">
+                <div className="chart-h-180" aria-label="Line chart showing cumulative CO₂ this week">
                   <Line data={lineData} options={lineOptions} />
                 </div>
               </section>
 
               {/* Mode donut */}
-              {donutLabels.length > 0 && (
+              {donutChartData && (
                 <section className="chart-wrap" aria-label="Mode breakdown donut chart">
                   <h2 className="chart-title">
                     <IconPieChart size={14} />
                     Mode Breakdown
                   </h2>
-                  <div style={{ height: 220 }} aria-label="Donut chart showing trips by transport mode">
-                    <Doughnut data={donutData} options={donutOptions} />
+                  <div className="chart-h-220" aria-label="Donut chart showing trips by transport mode">
+                    <Doughnut data={donutChartData} options={donutOptions} />
                   </div>
                 </section>
               )}
             </div>
 
             {/* Recent trips list */}
-            <section aria-label="Recent trips" style={{ marginTop: 'var(--s-2)' }}>
+            <section aria-label="Recent trips" className="mt-2">
               <div className="section-header">
                 <h2 className="section-title">
                   <IconClock size={16} />
@@ -543,73 +602,48 @@ export default function DashboardScreen({ user }) {
               {trips.length === 0 ? (
                 <div className="empty-state glass-card">
                   <div className="empty-icon"><IconClock size={32} /></div>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+                  <p className="text-secondary text-sm">
                     No trips yet — log your first commute
                   </p>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-2)' }}>
+                <div className="flex-col-gap2">
                   {trips.slice(0, 10).map((trip) => {
                     const level = trip.kg_co2 > 3 ? 'high' : trip.kg_co2 > 1 ? 'med' : 'low';
                     const co2Color = level === 'high' ? 'var(--c-danger)' : level === 'med' ? 'var(--c-warning)' : 'var(--c-primary)';
                     return (
                       <article
                         key={trip.id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 'var(--s-4)',
-                          padding: 'var(--s-4)',
-                          background: 'var(--glass-bg)',
-                          border: '1px solid var(--glass-border)',
-                          borderRadius: 'var(--r-lg)',
-                          transition: 'border-color var(--dur-base), background var(--dur-base)',
-                          cursor: 'default',
-                        }}
+                        className="recent-trip-article"
                         aria-label={`${MODE_LABELS[trip.mode] ?? trip.mode} from ${trip.origin} to ${trip.destination}`}
                       >
                         {/* Mode icon badge */}
                         <button
                           type="button"
                           onClick={() => handleDeleteTrip(trip.id)}
-                          className="trip-delete-btn"
+                          className="trip-delete-btn recent-trip-mode-btn"
                           title="Click to remove this entry"
                           aria-label={`Remove trip: ${MODE_LABELS[trip.mode] ?? trip.mode} from ${trip.origin} to ${trip.destination}`}
                           style={{
-                            width: 40, height: 40,
-                            borderRadius: 'var(--r-md)',
-                            background: `${MODE_COLORS[trip.mode] ?? '#64748b'}20`,
-                            border: `1px solid ${MODE_COLORS[trip.mode] ?? '#64748b'}40`,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: MODE_COLORS[trip.mode] ?? '#64748b',
-                            flexShrink: 0,
-                            cursor: 'pointer',
-                            padding: 0,
-                            position: 'relative',
-                            transition: 'all var(--dur-base)',
+                            '--mode-color': MODE_COLORS[trip.mode] ?? '#64748b',
+                            '--mode-color-bg': `${MODE_COLORS[trip.mode] ?? '#64748b'}20`,
+                            '--mode-color-border': `${MODE_COLORS[trip.mode] ?? '#64748b'}40`,
                           }}
                         >
-                          <span className="mode-icon-default" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <span className="mode-icon-default">
                             <ModeIcon mode={trip.mode} size={18} />
                           </span>
-                          <span className="mode-icon-delete" style={{ display: 'none', alignItems: 'center', justifyContent: 'center' }}>
+                          <span className="mode-icon-delete">
                             <IconMinus size={18} />
                           </span>
                         </button>
 
                         {/* Route info */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{
-                            fontSize: 'var(--text-sm)',
-                            fontWeight: 'var(--w-medium)',
-                            color: 'var(--text-primary)',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}>
+                        <div className="flex-1 min-w-0">
+                          <p className="sidebar-display-name">
                             {formatShortAddress(trip.origin)} → {formatShortAddress(trip.destination)}
                           </p>
-                          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          <p className="sidebar-display-email">
                             {MODE_LABELS[trip.mode]}
                             {trip.distance_km ? ` · ${roundCO2(trip.distance_km)} km` : ''}
                             {trip.timestamp ? ` · ${formatDate(trip.timestamp)}` : ''}
@@ -617,17 +651,15 @@ export default function DashboardScreen({ user }) {
                         </div>
 
                         {/* CO₂ value */}
-                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                          <div style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 'var(--text-sm)',
-                            fontWeight: 'var(--w-bold)',
-                            color: co2Color,
-                          }}>
+                        <div className="text-center flex-shrink-0">
+                          <div
+                            className="font-mono text-sm font-semi"
+                            style={{ color: co2Color }}
+                          >
                             {roundCO2(trip.kg_co2)} kg
                           </div>
                           {trip.kg_saved_if_alt > 0 && (
-                            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--c-primary)', marginTop: '2px' }}>
+                            <div className="text-xs text-green mt-3">
                               −{roundCO2(trip.kg_saved_if_alt)} possible
                             </div>
                           )}

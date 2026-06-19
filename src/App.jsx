@@ -5,8 +5,19 @@ import LandingScreen   from './screens/LandingScreen';
 import LogTripScreen   from './screens/LogTripScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import ProfileScreen   from './screens/ProfileScreen';
+import { GUEST_USER } from './config/constants';
 
-/* ── SVG Icons (no emoji) ──────────────────────────────────── */
+/**
+ * @file App.jsx
+ * @description Main application entry point handling routing, global layout, and auth state.
+ */
+
+/**
+ * Leaf SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=20] - Width/height of the icon
+ * @returns {JSX.Element}
+ */
 function IconLeaf({ size = 20 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -18,6 +29,12 @@ function IconLeaf({ size = 20 }) {
   );
 }
 
+/**
+ * Route SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=20] - Width/height of the icon
+ * @returns {JSX.Element}
+ */
 function IconRoute({ size = 20 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -29,6 +46,12 @@ function IconRoute({ size = 20 }) {
   );
 }
 
+/**
+ * Bar Chart SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=20] - Width/height of the icon
+ * @returns {JSX.Element}
+ */
 function IconBarChart({ size = 20 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -40,6 +63,12 @@ function IconBarChart({ size = 20 }) {
   );
 }
 
+/**
+ * User SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=20] - Width/height of the icon
+ * @returns {JSX.Element}
+ */
 function IconUser({ size = 20 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -51,6 +80,12 @@ function IconUser({ size = 20 }) {
   );
 }
 
+/**
+ * Alert SVG Icon component.
+ * @param {Object} props - Component props
+ * @param {number} [props.size=18] - Width/height of the icon
+ * @returns {JSX.Element}
+ */
 function IconAlert({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -62,16 +97,11 @@ function IconAlert({ size = 18 }) {
   );
 }
 
-/* ── Guest user object ─────────────────────────────────────── */
-const GUEST_USER = {
-  uid: 'guest',
-  displayName: 'Guest',
-  email: null,
-  photoURL: null,
-  isGuest: true,
-};
-
-/* ── Animated mesh background ──────────────────────────────── */
+/**
+ * Animated mesh background.
+ * Tracks mouse movements to dynamically displace overlay blobs.
+ * @returns {JSX.Element}
+ */
 function BgCanvas() {
   const canvasRef = useRef(null);
 
@@ -104,7 +134,14 @@ function BgCanvas() {
   );
 }
 
-/* ── Guest warning toast ───────────────────────────────────── */
+/**
+ * Toast alert component shown to unauthenticated guests.
+ * Automatically dismisses itself after 5 seconds.
+ * @param {Object} props - Component props
+ * @param {string} props.message - Toast notification text
+ * @param {function} props.onDone - Callback triggered upon dismissal
+ * @returns {JSX.Element}
+ */
 function GuestToast({ message, onDone }) {
   useEffect(() => {
     const t = setTimeout(onDone, 5000);
@@ -121,7 +158,16 @@ function GuestToast({ message, onDone }) {
   );
 }
 
-/* ── Sidebar navigation ────────────────────────────────────── */
+/**
+ * Navigation sidebar used in desktop viewports.
+ * Displays user identity summary and auth control buttons.
+ * @param {Object} props - Component props
+ * @param {Object} props.user - Active user object (or GUEST_USER)
+ * @param {function} props.onSignOut - Sign-out handler
+ * @param {function} props.onSignIn - Google sign-in handler
+ * @param {boolean} props.isGuest - Active guest mode status flag
+ * @returns {JSX.Element}
+ */
 function Sidebar({ user, onSignOut, onSignIn, isGuest }) {
   return (
     <nav className="app-sidebar" aria-label="Main navigation">
@@ -174,35 +220,25 @@ function Sidebar({ user, onSignOut, onSignIn, isGuest }) {
             Sign in with Google
           </button>
         ) : (
-          <div style={{ padding: '0 var(--s-3)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s-3)', marginBottom: 'var(--s-3)' }}>
+          <div className="sidebar-bottom-panel">
+            <div className="sidebar-user-info-row">
               {user?.photoURL ? (
                 <img
                   src={user.photoURL}
                   alt={`${user.displayName ?? 'User'} avatar`}
                   referrerPolicy="no-referrer"
-                  style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    border: '1px solid var(--glass-border-em)',
-                    objectFit: 'cover',
-                  }}
+                  className="sidebar-profile-img"
                 />
               ) : (
-                <div style={{
-                  width: 32, height: 32, borderRadius: '50%',
-                  background: 'var(--c-primary-glass)',
-                  border: '1px solid var(--glass-border-em)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--c-primary)',
-                }}>
+                <div className="sidebar-profile-placeholder">
                   <IconUser size={16} />
                 </div>
               )}
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--w-semi)', color: 'var(--text-primary)', truncate: true, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div className="flex-1 min-w-0">
+                <div className="sidebar-display-name">
                   {user?.displayName ?? 'User'}
                 </div>
-                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div className="sidebar-display-email">
                   {user?.email ?? ''}
                 </div>
               </div>
@@ -223,7 +259,11 @@ function Sidebar({ user, onSignOut, onSignIn, isGuest }) {
   );
 }
 
-/* ── Bottom nav (mobile/tablet) ────────────────────────────── */
+/**
+ * Bottom navigation bar visible on mobile and tablet viewport widths.
+ * Handles primary route switches using React Router NavLinks.
+ * @returns {JSX.Element}
+ */
 function BottomNav() {
   return (
     <nav className="bottom-nav" aria-label="Mobile navigation">
@@ -256,7 +296,10 @@ function BottomNav() {
   );
 }
 
-/* ── Mobile top bar ────────────────────────────────────────── */
+/**
+ * Top brand header bar visible on mobile.
+ * @returns {JSX.Element}
+ */
 function TopBar() {
   return (
     <header className="app-topbar" role="banner">
@@ -271,7 +314,10 @@ function TopBar() {
   );
 }
 
-/* ── Loading shell ─────────────────────────────────────────── */
+/**
+ * Full-screen loading shell indicating authentication state lookup progress.
+ * @returns {JSX.Element}
+ */
 function LoadingShell() {
   return (
     <div className="loading-shell">
@@ -286,7 +332,10 @@ function LoadingShell() {
   );
 }
 
-/* ── Root app ──────────────────────────────────────────────── */
+/**
+ * Root component that bootstraps application layout, routing paths, and global providers.
+ * @returns {JSX.Element}
+ */
 export default function App() {
   const { user, authError, signIn, signOutUser } = useAuth();
   const [signingIn, setSigningIn] = useState(false);
