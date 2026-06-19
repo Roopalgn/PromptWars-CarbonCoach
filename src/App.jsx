@@ -7,6 +7,7 @@ import DashboardScreen from './screens/DashboardScreen';
 import ProfileScreen   from './screens/ProfileScreen';
 import { GUEST_USER } from './config/constants';
 import LoadingShell from './components/LoadingShell';
+import TopBar from './components/TopBar';
 
 /**
  * @file App.jsx
@@ -297,23 +298,7 @@ function BottomNav() {
   );
 }
 
-/**
- * Top brand header bar visible on mobile.
- * @returns {JSX.Element}
- */
-function TopBar() {
-  return (
-    <header className="app-topbar" role="banner">
-      <div className="app-brand">
-        <div className="app-logo" aria-hidden="true">
-          <IconLeaf size={18} />
-        </div>
-        CarbonCoach
-        <div className="brand-dot" aria-hidden="true" />
-      </div>
-    </header>
-  );
-}
+
 
 
 
