@@ -9,79 +9,14 @@ import { GUEST_USER } from './config/constants';
 import LoadingShell from './components/LoadingShell';
 import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
+import Sidebar from './components/Sidebar';
 
 /**
  * @file App.jsx
  * @description Main application entry point handling routing, global layout, and auth state.
  */
 
-/**
- * Leaf SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=20] - Width/height of the icon
- * @returns {JSX.Element}
- */
-function IconLeaf({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true">
-      <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
-      <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-    </svg>
-  );
-}
 
-/**
- * Route SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=20] - Width/height of the icon
- * @returns {JSX.Element}
- */
-function IconRoute({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true">
-      <circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/>
-      <circle cx="18" cy="5" r="3"/>
-    </svg>
-  );
-}
-
-/**
- * Bar Chart SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=20] - Width/height of the icon
- * @returns {JSX.Element}
- */
-function IconBarChart({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true">
-      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-      <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
-    </svg>
-  );
-}
-
-/**
- * User SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=20] - Width/height of the icon
- * @returns {JSX.Element}
- */
-function IconUser({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-      <circle cx="12" cy="7" r="4"/>
-    </svg>
-  );
-}
 
 /**
  * Alert SVG Icon component.
@@ -171,96 +106,7 @@ function GuestToast({ message, onDone }) {
  * @param {boolean} props.isGuest - Active guest mode status flag
  * @returns {JSX.Element}
  */
-function Sidebar({ user, onSignOut, onSignIn, isGuest }) {
-  return (
-    <nav className="app-sidebar" aria-label="Main navigation">
-      <div className="sidebar-brand" aria-label="CarbonCoach">
-        <div className="app-logo" aria-hidden="true">
-          <IconLeaf size={18} />
-        </div>
-        CarbonCoach
-        <div className="brand-dot" aria-hidden="true" />
-      </div>
 
-      <div className="sidebar-nav">
-        <NavLink
-          to="/"
-          end
-          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-          aria-label="Log a trip"
-        >
-          <IconRoute size={18} />
-          Log Trip
-        </NavLink>
-
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-          aria-label="Dashboard"
-        >
-          <IconBarChart size={18} />
-          Dashboard
-        </NavLink>
-
-        <NavLink
-          to="/profile"
-          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-          aria-label="Profile"
-        >
-          <IconUser size={18} />
-          Profile
-        </NavLink>
-      </div>
-
-      <div className="sidebar-bottom">
-        {isGuest ? (
-          <button
-            type="button"
-            className="btn btn--primary btn--sm"
-            onClick={onSignIn}
-            aria-label="Sign in with Google"
-          >
-            Sign in with Google
-          </button>
-        ) : (
-          <div className="sidebar-bottom-panel">
-            <div className="sidebar-user-info-row">
-              {user?.photoURL ? (
-                <img
-                  src={user.photoURL}
-                  alt={`${user.displayName ?? 'User'} avatar`}
-                  referrerPolicy="no-referrer"
-                  className="sidebar-profile-img"
-                />
-              ) : (
-                <div className="sidebar-profile-placeholder">
-                  <IconUser size={16} />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="sidebar-display-name">
-                  {user?.displayName ?? 'User'}
-                </div>
-                <div className="sidebar-display-email">
-                  {user?.email ?? ''}
-                </div>
-              </div>
-            </div>
-            <button
-              id="sign-out-btn"
-              type="button"
-              className="btn btn--danger btn--sm btn--full"
-              onClick={onSignOut}
-              aria-label="Sign out of CarbonCoach"
-            >
-              Sign out
-            </button>
-          </div>
-        )}
-      </div>
-    </nav>
-  );
-}
 
 
 
