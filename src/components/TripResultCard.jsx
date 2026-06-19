@@ -1,122 +1,157 @@
 import { MODE_LABELS } from '../config/emissionsFactors';
-import { ModeIcon, IconLeaf, IconTrendingDown } from './Icons';
+import { MODE_BAR_CLASS } from '../config/constants';
 import { roundCO2 } from '../utils/formatters';
+import { IconSave, IconRefresh } from './Icons';
 
 /**
- * TripResultCard component — displays the carbon calculation results.
- * Shows the actual CO₂ of the trip versus the best alternative mode.
- * Slides in with an animated entrance and premium biophilic glassmorphism styling.
- * 
+ * Determine the emission impact level key based on kg CO2.
+ * @param {number} kg - Carbon emissions in kilograms
+ * @returns {'low'|'medium'|'high'}
+ */
+function co2Level(kg) {
+  if (kg <= 0.5) return 'low';
+  if (kg <= 2.0) return 'medium';
+  return 'high';
+}
+
+/**
+ * Trip Result Card displaying calculated carbon emission values,
+ * alternative mode comparisons, and logs/saves controls.
+ *
  * @param {Object} props - Component props
- * @param {Object} props.result - The trip calculation result object
- * @param {string} props.result.mode - Chosen travel mode
- * @param {string} props.result.origin - Starting location name
- * @param {string} props.result.destination - Destination location name
- * @param {number} props.result.distance_km - Distance of the trip in kilometers
- * @param {number} props.result.kg_co2 - CO2 emissions in kilograms
- * @param {string} props.result.best_alternative_mode - Best alternative travel mode
- * @param {number} props.result.best_alternative_kg - CO2 emissions of the alternative mode
- * @param {number} props.result.kg_saved_if_alt - Kilograms of CO2 saved if alternative was used
- * @param {function} props.onLog - Callback when user logs the trip
- * @param {function} props.onReset - Callback when user resets/calculates another trip
+ * @param {Object} props.result - Calculated route emission results
+ * @param {string} props.result.mode - Chosen mode key
+ * @param {string} props.result.origin - Starting address
+ * @param {string} props.result.destination - Ending address
+ * @param {number} props.result.distance_km - Travel distance in km
+ * @param {number} props.result.kg_co2 - Carbon footprint of chosen mode
+ * @param {string} props.result.best_alternative_mode - Best alternative mode key
+ * @param {number} props.result.best_alternative_kg - Carbon footprint of best alternative mode
+ * @param {number} props.result.kg_saved_if_alt - Potential savings in kg CO2
+ * @param {Array<Object>} props.result.alternatives - List of calculated alternative route options
+ * @param {function} props.onLog - Trip log save trigger handler
+ * @param {function} props.onReset - Reset form fields and state callback
+ * @param {boolean} props.saving - In-flight log operations indicator
+ * @param {boolean} props.isGuest - Flag indicating active guest mode
  * @returns {JSX.Element}
  */
-export default function TripResultCard({ result, onLog, onReset }) {
-  const {
-    mode,
-    origin,
-    destination,
-    distance_km,
-    kg_co2,
-    best_alternative_mode,
-    best_alternative_kg,
-    kg_saved_if_alt,
-  } = result;
+export default function TripResultCard({ result, onLog, onReset, saving, isGuest }) {
+  const level = co2Level(result.kg_co2);
+  const maxKg = Math.max(...result.alternatives.map((a) => a.kg_co2), result.kg_co2, 0.01);
 
-  const savedPositive = kg_saved_if_alt > 0;
-
-  // Traffic-light color for CO₂ value using design system variables
-  const co2Color =
-    kg_co2 > 3 ? 'var(--c-danger)'
-    : kg_co2 > 1 ? 'var(--c-warning)'
-    : 'var(--c-primary)';
+  const barClass = (mode) => MODE_BAR_CLASS[mode] ?? 'alt-bar-fill--slate';
 
   return (
-    <div className="result-card" role="region" aria-label="Trip carbon calculation result">
-      {/* Route */}
-      <p className="result-route" aria-label={`Trip from ${origin} to ${destination}`}>
-        {origin} <span className="result-route-arrow">→</span> {destination}
-      </p>
-
+    <div className="result-card">
       {/* CO₂ big display */}
-      <div className="result-co2-block">
+      <div className="co2-display">
+        <div className="label-tag label-tag--cyan result-label-tag">
+          Your trip — {result.distance_km} km · {MODE_LABELS[result.mode]}
+        </div>
         <div
-          className="result-co2-value"
-          style={{ color: co2Color }}
-          aria-label={`${roundCO2(kg_co2)} kilograms CO₂`}
+          className="co2-value result-co2-display"
+          style={{
+            '--co2-color': level === 'low' ? 'var(--c-primary)' : level === 'medium' ? 'var(--c-warning)' : 'var(--c-danger)',
+            '--co2-shadow': level === 'low'
+              ? '0 0 40px var(--c-primary-glow)'
+              : level === 'medium'
+              ? '0 0 40px rgba(245,158,11,0.3)'
+              : '0 0 40px rgba(239,68,68,0.3)',
+          }}
         >
-          {roundCO2(kg_co2)}
-          <span className="result-co2-unit">
-            kg CO₂
-          </span>
+          {roundCO2(result.kg_co2)}
+          <span className="co2-unit">kg CO₂</span>
         </div>
-        <p className="result-co2-label">
-          via {MODE_LABELS[mode]} · {roundCO2(distance_km)} km
+        <p className="co2-label">
+          {level === 'low' && 'Low impact — great choice!'}
+          {level === 'medium' && 'Moderate impact — consider alternatives below.'}
+          {level === 'high' && 'High impact — see greener options below.'}
         </p>
       </div>
 
-      {/* Best alternative */}
-      <div className="result-alt-section" aria-label="Best alternative transport mode">
-        <p className="result-alt-label">
-          {savedPositive ? '🌿 Switch to save' : '✅ Already optimal'}
-        </p>
-        <div className="result-alt-card">
-          <div className="result-alt-icon-box">
-            <ModeIcon mode={best_alternative_mode} size={20} />
-          </div>
-          <div className="flex-1">
-            <p className="result-alt-title">
-              {MODE_LABELS[best_alternative_mode]}
-            </p>
-            <p className="result-alt-subtitle">
-              {roundCO2(best_alternative_kg)} kg CO₂
-              {savedPositive && (
-                <span className="result-alt-savings">
-                  · saves {roundCO2(kg_saved_if_alt)} kg
-                </span>
-              )}
-            </p>
-          </div>
-          {savedPositive && (
-            <div className="result-alt-check">
-              <IconLeaf size={18} />
+      {/* Your chosen mode vs reference bar */}
+      <div className="mb-4">
+        <div className="alt-bar-row">
+          <span className="alt-bar-label">{MODE_LABELS[result.mode]}</span>
+          <div className="alt-bar-track">
+            <div
+              className={`alt-bar-fill ${barClass(result.mode)}`}
+              style={{ width: `${(result.kg_co2 / maxKg) * 100}%` }}
+              role="progressbar"
+              aria-valuenow={result.kg_co2}
+              aria-valuemax={maxKg}
+              aria-label={`${MODE_LABELS[result.mode]}: ${roundCO2(result.kg_co2)} kg`}
+            >
+              {roundCO2(result.kg_co2)} kg
             </div>
-          )}
+          </div>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="result-actions">
+      {/* Comparison bars */}
+      <div className="section-header mb-3">
+        <span className="chart-title mb-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+          </svg>
+          Alternatives for this route
+        </span>
+      </div>
+
+      <div aria-label="Alternative transport modes comparison">
+        {result.alternatives.map((alt) => (
+          <div key={alt.mode} className="alt-bar-row">
+            <span className="alt-bar-label">{MODE_LABELS[alt.mode]}</span>
+            <div className="alt-bar-track">
+              <div
+                className={`alt-bar-fill ${barClass(alt.mode)}`}
+                style={{ width: `${(alt.kg_co2 / maxKg) * 100}%`, minWidth: alt.kg_co2 === 0 ? 60 : undefined }}
+                role="progressbar"
+                aria-valuenow={alt.kg_co2}
+                aria-valuemax={maxKg}
+                aria-label={`${MODE_LABELS[alt.mode]}: ${roundCO2(alt.kg_co2)} kg`}
+              >
+                {alt.kg_co2 === 0 ? '0 kg' : `${roundCO2(alt.kg_co2)} kg`}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Save / Reset */}
+      <div className="log-trip-actions-row">
         <button
           id="log-trip-btn"
           type="button"
-          className="btn btn--primary btn--full"
+          className="btn btn--primary flex-1"
           onClick={onLog}
-          aria-label="Log this trip and go to your dashboard"
+          disabled={saving}
+          aria-label={isGuest ? 'Log trip locally (guest mode)' : 'Save trip to your account'}
         >
-          Log this trip
-          <IconTrendingDown size={18} />
+          {saving ? (
+            <><div className="spinner spinner-16" />Saving…</>
+          ) : (
+            <><IconSave size={16} />{isGuest ? 'Log (guest)' : 'Save trip'}</>
+          )}
         </button>
         <button
-          id="reset-trip-btn"
+          id="reset-btn"
           type="button"
-          className="btn btn--ghost btn--full"
+          className="btn btn--ghost"
           onClick={onReset}
-          aria-label="Calculate a different trip"
+          aria-label="Log another trip"
         >
-          Try another trip
+          <IconRefresh size={16} />
+          Reset
         </button>
       </div>
+
+      {isGuest && (
+        <p className="mt-3 text-xs text-muted text-center">
+          Guest mode — trip stored in-session only. Sign in to persist your data.
+        </p>
+      )}
     </div>
   );
 }
