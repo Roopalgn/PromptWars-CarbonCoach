@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, memo } from 'react';
 import { useTrips } from '../hooks/useTrips';
 import { getLatestInsight, saveInsight, deleteTrip } from '../services/firestore';
 import { ModeIcon, IconMinus } from '../components/Icons';
+import KpiCard from '../components/KpiCard';
 import { generateInsight } from '../services/gemini';
 import { roundCO2, formatDate, formatDayLabel, getLast7Days, isThisWeek, formatShortAddress } from '../utils/formatters';
 import { MODE_LABELS } from '../config/emissionsFactors';
@@ -153,32 +154,6 @@ const InsightCard = memo(function InsightCard({ insight }) {
           "{insight.encouragement}"
         </p>
       )}
-    </div>
-  );
-});
-
-/**
- * Key Performance Indicator Card component.
- * Uses React.memo to prevent redraws when values are unchanged.
- * @param {Object} props - Component props
- * @param {JSX.Element} props.icon - Icon element
- * @param {string|number} props.value - Numeric statistic value
- * @param {string} [props.unit] - Units of the value
- * @param {string} props.label - Explanatory stat label
- * @param {string} props.colorClass - CSS modifier class for card coloring
- * @param {string} props.iconClass - CSS modifier class for icon coloring
- */
-const KpiCard = memo(function KpiCard({ icon, value, unit, label, colorClass, iconClass }) {
-  return (
-    <div className={`kpi-card kpi-card--${colorClass}`}>
-      <div className={`kpi-icon kpi-icon--${iconClass}`} aria-hidden="true">
-        {icon}
-      </div>
-      <div className="kpi-value" aria-label={`${value} ${unit}`}>
-        {value}
-        {unit && <span className="kpi-unit">{unit}</span>}
-      </div>
-      <div className="kpi-label">{label}</div>
     </div>
   );
 });
