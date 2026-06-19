@@ -11,6 +11,7 @@ import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
 import Sidebar from './components/Sidebar';
 import BgCanvas from './components/BgCanvas';
+import Toast from './components/Toast';
 
 /**
  * @file App.jsx
@@ -19,48 +20,7 @@ import BgCanvas from './components/BgCanvas';
 
 
 
-/**
- * Alert SVG Icon component.
- * @param {Object} props - Component props
- * @param {number} [props.size=18] - Width/height of the icon
- * @returns {JSX.Element}
- */
-function IconAlert({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true">
-      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-      <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-    </svg>
-  );
-}
 
-
-
-/**
- * Toast alert component shown to unauthenticated guests.
- * Automatically dismisses itself after 5 seconds.
- * @param {Object} props - Component props
- * @param {string} props.message - Toast notification text
- * @param {function} props.onDone - Callback triggered upon dismissal
- * @returns {JSX.Element}
- */
-function GuestToast({ message, onDone }) {
-  useEffect(() => {
-    const t = setTimeout(onDone, 5000);
-    return () => clearTimeout(t);
-  }, [onDone]);
-
-  return (
-    <div className="toast-container" aria-live="polite">
-      <div className="toast toast--warning" role="status">
-        <IconAlert size={16} />
-        <span>{message}</span>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Navigation sidebar used in desktop viewports.
@@ -142,9 +102,11 @@ export default function App() {
 
       {/* Guest Toast (popup briefly once) */}
       {showGuestToast && (
-        <GuestToast
+        <Toast
           message="Guest mode — trips aren't saved. Sign in to persist your data."
           onDone={() => setShowGuestToast(false)}
+          type="warning"
+          duration={5000}
         />
       )}
 

@@ -20,32 +20,12 @@ import {
 } from '../components/Icons';
 import ModeSelector from '../components/ModeSelector';
 import TripResultCard from '../components/TripResultCard';
+import Toast from '../components/Toast';
 import { MODE_BAR_CLASS } from '../config/constants';
 
 
 
-/**
- * Toast alert notification component.
- * Automatically clears itself after 3.5 seconds.
- * @param {Object} props - Component props
- * @param {string} props.message - Banner text to display
- * @param {function} props.onDone - Dismiss callback
- * @returns {JSX.Element}
- */
-function Toast({ message, onDone }) {
-  useEffect(() => {
-    const t = setTimeout(onDone, 3500);
-    return () => clearTimeout(t);
-  }, [onDone]);
-  return (
-    <div className="toast-container" aria-live="polite">
-      <div className="toast toast--success" role="status">
-        <IconCheck size={16} />
-        {message}
-      </div>
-    </div>
-  );
-}
+
 
 
 
