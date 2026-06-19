@@ -14,5 +14,5 @@
 - [x] Step 2B: Trees Equivalent Metric
 - [x] Step 2C: India Average Baseline KPI
 - [x] Step 3A: Fix Broken Firestore Delete Rule
-- [ ] Step 3B: Document App Check in README
+- [x] Step 3B: Document App Check in README
 - [ ] Step 4: Verification & Deployment

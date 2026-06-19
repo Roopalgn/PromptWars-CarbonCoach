@@ -142,6 +142,31 @@ npm test
 npm run deploy
 ```
 
+### Firebase App Check Configuration
+
+To secure backend services (Firestore and Firebase AI Logic) against abuse, Firebase App Check can be activated.
+
+#### A. Local Development (Debug Mode)
+For local testing or verification in CI environments, configure App Check with the debug provider:
+1. Enable App Check in the Firebase Console and generate a **Debug Token**.
+2. Set the debug token in your local environment by adding the token to window/self context during Firebase initialization:
+   ```javascript
+   import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
+
+   if (import.meta.env.DEV) {
+     self.FIREBASE_APPCHECK_DEBUG_TOKEN = 'YOUR_DEBUG_TOKEN';
+   }
+   initializeAppCheck(app, {
+     provider: new ReCaptchaEnterpriseProvider('YOUR_RECAPTCHA_ENTERPRISE_KEY_ID'),
+     isTokenAutoRefreshEnabled: true
+   });
+   ```
+
+#### B. Production Deployed Mode
+1. Register your web app in the App Check section of the Firebase Console.
+2. Link your app to reCAPTCHA Enterprise and configure keys.
+3. Once active, the App Check token is verified on Firestore operations to block requests originating from unauthorized clients.
+
 ---
 
 ## 7. Accessibility
@@ -162,6 +187,7 @@ npm run deploy
 - **Data Scoping**: Firebase Firestore Security Rules explicitly restrict read/write access to matching authenticated UIDs (`/users/{userId}/**`).
 - **API Key Hardening**: Environment variables are kept out of Git (`.env` in `.gitignore`). Setup instructions guide setting HTTP referrers and API restrictions in Google Cloud Console.
 - **Firebase Hosting Headers**: Implements HTTP security headers including a strict Content-Security-Policy (CSP), `X-Content-Type-Options: nosniff`, and `X-Frame-Options: DENY`.
+- **App Check Protection**: Configured for app integrity verification. App Check debug tokens can be configured for local development and CI verification.
 
 ### Efficiency
 - **State Optimization**: Uses real-time `onSnapshot` subscriptions optimized to update elements efficiently rather than trigger complete page rerenders.
